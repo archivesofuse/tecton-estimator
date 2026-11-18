@@ -71,7 +71,6 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 </div>
 </header>
 <main>
-<!-- START -->
 <div id="s1" class="screen on">
 <div class="card">
 <h2>Describe the Job</h2>
@@ -92,7 +91,6 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 <p class="n">System adds foundations, floor, insulation, prelims, cladding, internal works etc. if they are missing. You can still edit every line.</p>
 </div>
 </div>
-<!-- ESTIMATE -->
 <div id="s2" class="screen">
 <div class="meta">
 <div><label>Project</label><input id="pName"/></div>
@@ -120,20 +118,20 @@ const R={skip:380,conc:155,mesh:90,pir:100,hard:85,lab:320,prelim:3750,sipm2:280
 let secs=[];
 const P={
 prelims:{t:"Site & Safety / Prelims",c:"high",a:1,fn:(a,s)=>[
-{d:"6m³ Skip x2",q:Math.max(2,Math.ceil(a/25)),r:R.skip,u:"no",x:1},
+{d:"6m3 Skip x2",q:Math.max(2,Math.ceil(a/25)),r:R.skip,u:"no",x:1},
 {d:"Heras / site security",q:1,r:450,u:"sum",x:1},
 {d:"Welfare / power",q:1,r:600,u:"sum",x:1},
 {d:"Prelims weeks",q:s===2?2:1,r:R.prelim,u:"wk",x:1}]},
 found:{t:"Foundations & Groundworks",c:"med",a:1,fn:(a)=>[
 {d:"Excavation & disposal",q:1,r:Math.round(a*70),u:"sum",x:1},
-{d:"Ready-mix concrete m³",q:Math.max(8,Math.round(a*.35)),r:R.conc,u:"m³",x:1},
+{d:"Ready-mix concrete m3",q:Math.max(8,Math.round(a*.35)),r:R.conc,u:"m3",x:1},
 {d:"A393 mesh",q:Math.max(6,Math.ceil(a/5)),r:R.mesh,u:"sh",x:1},
 {d:"Hardcore / SR21",q:Math.max(10,Math.round(a*.4)),r:R.hard,u:"t",x:1},
 {d:"Labour dig & pour days",q:Math.max(4,Math.ceil(a/8)),r:R.lab,u:"day",x:1}]},
 floor:{t:"Floor Base & Insulation",c:"high",a:1,fn:(a)=>[
 {d:"150mm PIR",q:Math.ceil(a/2.8),r:R.pir,u:"sh",x:1},
 {d:"Radon / DPM",q:1,r:Math.round(a*7),u:"sum",x:1},
-{d:"Concrete slab m³",q:Math.max(4,Math.round(a*.15)),r:R.conc,u:"m³",x:1},
+{d:"Concrete slab m3",q:Math.max(4,Math.round(a*.15)),r:R.conc,u:"m3",x:1},
 {d:"Labour floor days",q:Math.max(3,Math.ceil(a/12)),r:R.lab,u:"day",x:1}]},
 sip:{t:"Guardian / SIP Kit & Erect",c:"med",k:["sip","guardian","panel"],fn:(a)=>[
 {d:"SIP / Guardian kit",q:1,r:Math.round(a*R.sipm2),u:"sum",x:1},
@@ -144,7 +142,7 @@ timber:{t:"Timber Frame",c:"med",k:["timber"],fn:(a)=>[
 {d:"Timber frame kit",q:1,r:Math.round(a*220),u:"sum",x:1},
 {d:"Erect labour + plant",q:Math.max(5,Math.ceil(a/8)),r:R.lab,u:"day",x:1}]},
 block:{t:"Blockwork Superstructure",c:"med",k:["block","masonry"],fn:(a,s)=>[
-{d:"Blockwork m²",q:Math.round(a*(s===2?2.8:1.6)),r:95,u:"m²",x:1},
+{d:"Blockwork m2",q:Math.round(a*(s===2?2.8:1.6)),r:95,u:"m2",x:1},
 {d:"Labour block days",q:Math.max(8,Math.ceil(a/4)),r:R.lab,u:"day",x:1}]},
 clad:{t:"External Cladding & Weather",c:"med",a:1,fn:(a)=>[
 {d:"Cladding / render allowance",q:1,r:Math.round(a*110),u:"sum",x:1},
@@ -166,11 +164,11 @@ exist:{t:"Existing House Works",c:"med",k:["existing","kitchen","remove","openin
 {d:"Electrics relocate",q:1,r:1100,u:"sum",x:1},
 {d:"Floor / wall make-good",q:1,r:850,u:"sum",x:1}]},
 flr:{t:"Flooring",c:"high",k:["flooring","timber floor","t&g"],fn:(a)=>[
-{d:"Timber floor + underlay",q:a,r:R.flm2,u:"m²",x:1},
+{d:"Timber floor + underlay",q:a,r:R.flm2,u:"m2",x:1},
 {d:"Skirting",q:1,r:Math.round(a*12),u:"sum",x:1}]},
 bath:{t:"Bathroom",c:"med",k:["bathroom","shower","toilet","tiles","suite"],fn:()=>[
-{d:"Floor tiles + labour",q:4,r:R.tf,u:"m²",x:1},
-{d:"Wall tiles + labour",q:20,r:R.tw,u:"m²",x:1},
+{d:"Floor tiles + labour",q:4,r:R.tf,u:"m2",x:1},
+{d:"Wall tiles + labour",q:20,r:R.tw,u:"m2",x:1},
 {d:"Toilet window + works",q:1,r:650,u:"sum",x:1},
 {d:"Bathroom suite",q:1,r:1800,u:"sum",x:1},
 {d:"Radiators + 2nd fix",q:1,r:980,u:"sum",x:1}]},
@@ -210,7 +208,7 @@ secs=ns;
 document.getElementById("pName").value=name;
 document.getElementById("pClient").value=client;
 document.getElementById("pDate").value=new Date().toISOString().slice(0,10);
-document.getElementById("note").innerHTML="<strong>Scope analysed.</strong> "+a+" m² · "+(s===2?"Two":"Single")+" storey · "+typ.toUpperCase()+".<br><strong>Detected:</strong> "+(det.join(", ")||"core works")+".<br><strong>Auto-added:</strong> "+(miss.join(", ")||"none")+". Green “auto” tags = system added.";
+document.getElementById("note").innerHTML="<strong>Scope analysed.</strong> "+a+" m2 · "+(s===2?"Two":"Single")+" storey · "+typ.toUpperCase()+".<br><strong>Detected:</strong> "+(det.join(", ")||"core works")+".<br><strong>Auto-added:</strong> "+(miss.join(", ")||"none")+". Green auto tags = system added.";
 showEst();render();
 }
 function showEst(){document.getElementById("s1").classList.remove("on");document.getElementById("s2").classList.add("on");document.getElementById("tb").style.display="flex"}
@@ -220,33 +218,24 @@ function render(){
 const c=document.getElementById("secs");c.innerHTML="";
 secs.forEach((s,si)=>{
 const el=document.createElement("div");el.className="sec";
-el.innerHTML=`<div class="sec-h" onclick="tog(this)"><h2>${s.t}</h2><span class="conf c${s.c[0]}">${s.c}</span>
-<button class="d s" onclick="event.stopPropagation();rmSec(${si})">Remove</button></div>
-<div>${s.items.map((it,ii)=>`<div class="line">
-<div><input value="${esc(it.d)}" onchange="upd(${si},${ii},'d',this.value)"/>${it.x?'<span class="auto">auto</span>':''}</div>
-<input type="number" value="${it.q}" step=".1" min="0" onchange="upd(${si},${ii},'q',this.value)"/>
-<input type="number" value="${it.r}" step="1" min="0" onchange="upd(${si},${ii},'r',this.value)"/>
-<div class="tot">€${(+it.q*+it.r).toFixed(0)}</div>
-<div><button class="d" onclick="rmIt(${si},${ii})">✕</button></div></div>`).join("")}
-<div class="add"><button class="s" onclick="addIt(${si})">+ Add Item</button></div></div>
-<div class="sec-f"><span>Section total</span><span class="sec-t">€${st(s).toFixed(0)}</span></div>`;
+el.innerHTML="<div class=\"sec-h\" onclick=\"tog(this)\"><h2>"+s.t+"</h2><span class=\"conf c"+s.c[0]+"\">"+s.c+"</span><button class=\"d s\" onclick=\"event.stopPropagation();rmSec("+si+")\">Remove</button></div><div>"+s.items.map(function(it,ii){return "<div class=\"line\"><div><input value=\""+esc(it.d)+"\" onchange=\"upd("+si+","+ii+",'d',this.value)\"/>"+(it.x?"<span class=\"auto\">auto</span>":"")+"</div><input type=\"number\" value=\""+it.q+"\" step=\".1\" min=\"0\" onchange=\"upd("+si+","+ii+",'q',this.value)\"/><input type=\"number\" value=\""+it.r+"\" step=\"1\" min=\"0\" onchange=\"upd("+si+","+ii+",'r',this.value)\"/><div class=\"tot\">€"+(+it.q*+it.r).toFixed(0)+"</div><div><button class=\"d\" onclick=\"rmIt("+si+","+ii+")\">X</button></div></div>"}).join("")+"<div class=\"add\"><button class=\"s\" onclick=\"addIt("+si+")\">+ Add Item</button></div></div><div class=\"sec-f\"><span>Section total</span><span class=\"sec-t\">€"+st(s).toFixed(0)+"</span></div>";
 c.appendChild(el)});
-const sub=secs.reduce((t,s)=>t+st(s),0),cont=sub*.15,g=sub+cont;
+const sub=secs.reduce(function(t,s){return t+st(s)},0),cont=sub*.15,g=sub+cont;
 document.getElementById("sub").textContent="€"+sub.toFixed(0);
 document.getElementById("cont").textContent="€"+cont.toFixed(0);
 document.getElementById("grand").textContent="€"+g.toFixed(0);
 document.getElementById("sell").textContent="€"+(g*2).toFixed(0);
 }
-function esc(s){return String(s).replace(/&/g,"&").replace(/</g,"<").replace(/>/g,">").replace(/"/g,""")}
+function esc(s){return String(s).replace(/&/g,"&").replace(/</g,"<").replace(/>/g,">").replace(/\"/g,""")}
 function upd(si,ii,f,v){if(f==="q"||f==="r")v=+v||0;secs[si].items[ii][f]=v;if(f==="r"||f==="q")secs[si].items[ii].x=0;render()}
 function addIt(si){secs[si].items.push({d:"New item",q:1,r:0,u:"sum",x:0});render()}
 function rmIt(si,ii){if(secs[si].items.length<=1&&!confirm("Remove last item?"))return;secs[si].items.splice(ii,1);render()}
 function addSec(){const t=prompt("Section name","New Section");if(!t)return;secs.push({id:"c"+Date.now(),t:t,c:"med",items:[{d:"New item",q:1,r:0,u:"sum",x:0}]});render()}
 function rmSec(si){if(!confirm("Remove section?"))return;secs.splice(si,1);render()}
 function tog(h){const b=h.nextElementSibling;b.style.display=b.style.display==="none"?"":"none"}
-function openRates(){const l=document.getElementById("rl");l.innerHTML="";Object.keys(R).forEach(k=>{const r=document.createElement("div");r.className="rr";r.innerHTML=`<label>${k}</label><input type="number" data-k="${k}" value="${R[k]}"/>`;l.appendChild(r)});document.getElementById("rm").classList.add("on")}
+function openRates(){const l=document.getElementById("rl");l.innerHTML="";Object.keys(R).forEach(function(k){const r=document.createElement("div");r.className="rr";r.innerHTML="<label>"+k+"</label><input type=\"number\" data-k=\""+k+"\" value=\""+R[k]+"\"/>";l.appendChild(r)});document.getElementById("rm").classList.add("on")}
 function closeRates(){document.getElementById("rm").classList.remove("on")}
-function saveRates(){document.querySelectorAll("#rl input").forEach(i=>{R[i.dataset.k]=+i.value||0});try{localStorage.setItem("tecton_R",JSON.stringify(R))}catch(e){}closeRates();alert("Rates saved")}
+function saveRates(){document.querySelectorAll("#rl input").forEach(function(i){R[i.dataset.k]=+i.value||0});try{localStorage.setItem("tecton_R",JSON.stringify(R))}catch(e){}closeRates();alert("Rates saved")}
 try{const s=localStorage.getItem("tecton_R");if(s)Object.assign(R,JSON.parse(s))}catch(e){}
 document.getElementById("pDate").value=new Date().toISOString().slice(0,10);
 </script>
