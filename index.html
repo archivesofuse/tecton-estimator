@@ -157,13 +157,6 @@
       font-size: 0.88rem;
     }
     .line:last-child { border-bottom: none; }
-    .price-research { grid-column: 1 / -1; padding: 0.25rem 0 0.55rem; color: var(--tecton-muted); font-size: 0.76rem; }
-    .price-research a { color: #9ecbff; margin-right: 0.7rem; }
-    .price-research .price-status { color: #ffcc80; }
-    .price-research .price-status.good { color: #a5d6a7; }
-    .price-research .price-status.error { color: #ef9a9a; }
-    .price-research button { margin-left: 0.4rem; }
-
     .line input[type="text"], .line input[type="number"] {
       width: 100%;
       background: var(--tecton-black);
@@ -564,7 +557,6 @@
                 <div class="line-actions">
                   <button class="danger" onclick="removeItem(${sIdx},${iIdx})" title="Remove">✕</button>
                 </div>
-                <div class="price-research" id="price-source-${sIdx}-${iIdx}">${renderPriceSources(item)}</div>
               </div>
             `).join("")}
             <div class="add-line-row">
@@ -599,80 +591,6 @@
       document.getElementById("sellPrice").textContent = "€" + (grand * 2).toFixed(0);
     }
 
-
-    // ========== LIVE PRICE RESEARCH ==========
-    const PRICE_SEARCH_ENDPOINT = "/api/price-search";
-    const priceSearchControllers = new Map();
-
-    function renderPriceSources(item) {
-      if (item.priceSearching) return '<span class="price-status">Searching live supplier and web prices…</span>';
-      if (item.priceError) return '<span class="price-status error">' + escapeHtml(item.priceError) + '</span>';
-      if (!item.priceSources || !item.priceSources.length) {
-        return item.priceCheckedAt ? '<span class="price-status">No verifiable online price found. Enter a rate manually.</span>' : '';
-      }
-      const links = item.priceSources.map(source =>
-        '<a href="' + escapeHtml(source.url) + '" target="_blank" rel="noopener noreferrer">' +
-        escapeHtml(source.source) + (source.price ? ' · €' + Number(source.price).toFixed(2) : ' · listing') + '</a>'
-      ).join('');
-      return '<span class="price-status good">Checked ' + escapeHtml(item.priceCheckedAt || '') +
-        (item.priceEstimate ? ' · suggested €' + Number(item.priceEstimate).toFixed(2) : ' · no price detected') +
-        '</span><br>' + links;
-    }
-
-    async function researchItemPrice(sIdx, iIdx) {
-      const item = sections[sIdx] && sections[sIdx].items[iIdx];
-      if (!item) return;
-      const query = String(item.desc || '').trim();
-      if (!query || query.toLowerCase() === 'new item') return;
-      const key = sIdx + ':' + iIdx;
-      if (priceSearchControllers.has(key)) priceSearchControllers.get(key).abort();
-      const controller = new AbortController();
-      priceSearchControllers.set(key, controller);
-      item.priceSearching = true;
-      item.priceError = '';
-      saveState();
-      render();
-      try {
-        const response = await fetch(PRICE_SEARCH_ENDPOINT + '?q=' + encodeURIComponent(query), {
-          signal: controller.signal,
-          headers: { 'Accept': 'application/json' }
-        });
-        if (!response.ok) throw new Error('Price search service returned ' + response.status + '.');
-        const data = await response.json();
-        const current = sections[sIdx] && sections[sIdx].items[iIdx];
-        if (!current || current.desc.trim() !== query) return;
-        current.priceSources = Array.isArray(data.results) ? data.results.slice(0, 12) : [];
-        current.priceCheckedAt = data.checkedAt || new Date().toISOString().slice(0, 10);
-        current.priceSearching = false;
-        const priced = current.priceSources.map(x => Number(x.price)).filter(x => Number.isFinite(x) && x > 0);
-        if (priced.length) {
-          const sorted = priced.slice().sort((a,b) => a-b);
-          const mid = Math.floor(sorted.length / 2);
-          const median = sorted.length % 2 ? sorted[mid] : (sorted[mid-1] + sorted[mid]) / 2;
-          current.priceEstimate = Math.round(median * 100) / 100;
-          current.rate = current.priceEstimate;
-          current.priceBasis = 'Median of ' + priced.length + ' live listed prices';
-          syncItemToGlobalRates(current);
-        } else {
-          current.priceEstimate = null;
-          current.priceBasis = 'No price extracted from search results';
-        }
-        current.priceError = '';
-        saveState();
-        render();
-      } catch (error) {
-        const current = sections[sIdx] && sections[sIdx].items[iIdx];
-        if (current && error.name !== 'AbortError') {
-          current.priceSearching = false;
-          current.priceError = 'Live search unavailable. ' + error.message + ' Enter a rate manually.';
-          saveState();
-          render();
-        }
-      } finally {
-        if (priceSearchControllers.get(key) === controller) priceSearchControllers.delete(key);
-      }
-    }
-
     // ========== ACTIONS ==========
     // Add or refresh an estimate item in the reusable Global Rates library.
     // The description is the stable match; editing its rate updates the saved global rate.
@@ -680,7 +598,7 @@
       const label = String(item.desc || "").trim();
       if (!label || label.toLowerCase() === "new item") return;
 
-      const normalise = value => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+      const normalise = value => String(value || "").trim().toLowerCase().replace(/\\s+/g, " ");
       let key = Object.keys(rates).find(k => normalise(rates[k].label) === normalise(label));
       if (!key) {
         key = label.toLowerCase()
@@ -701,37 +619,21 @@
     function updateItem(sIdx, iIdx, field, value) {
       if (field === "qty" || field === "rate") value = Number(value) || 0;
       sections[sIdx].items[iIdx][field] = value;
-      if (field === "desc") {
-        sections[sIdx].items[iIdx].priceSources = [];
-        sections[sIdx].items[iIdx].priceCheckedAt = "";
-        sections[sIdx].items[iIdx].priceEstimate = null;
-        syncItemToGlobalRates(sections[sIdx].items[iIdx]);
-        saveState();
-        render();
-        researchItemPrice(sIdx, iIdx);
-        return;
-      }
       syncItemToGlobalRates(sections[sIdx].items[iIdx]);
       saveState();
       render();
     }
 
     function addItem(sIdx) {
-      sections[sIdx].items.push({ desc: "", qty: 1, rate: 0, unit: "each" });
+      sections[sIdx].items.push({ desc: "New item", qty: 1, rate: 0, unit: "sum" });
       saveState();
       render();
-      setTimeout(() => {
-        const inputs = document.querySelectorAll("#sections .section")[sIdx]?.querySelectorAll(".line input.desc");
-        inputs && inputs[inputs.length - 1]?.focus();
-      }, 0);
     }
 
     function removeItem(sIdx, iIdx) {
       if (sections[sIdx].items.length <= 1) {
         if (!confirm("Remove the last item in this section?")) return;
       }
-      const controller = priceSearchControllers.get(sIdx + ":" + iIdx);
-      if (controller) controller.abort();
       sections[sIdx].items.splice(iIdx, 1);
       saveState();
       render();
