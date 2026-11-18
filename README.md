@@ -2,37 +2,31 @@
 
 Conservative, plug-and-play cost estimator for home extensions (Ireland).
 
+## How it works now
+
+1. **Start page** – You describe the job in plain English (or paste a list of what is included).
+2. **Automatic scope expansion** – The system detects what you wrote, then adds anything that is normally required but missing (foundations, floor slab, insulation, prelims, cladding, internal works, attendances, etc.).
+3. **Full estimate** – You get a complete conservative cost breakdown. Every line is still editable. Rates you change are saved permanently on that browser.
+
 ## Features
 
-- Fully **dynamic line items** – add or remove any item or whole section
-- **Permanent corrections** – change any rate and it is remembered forever on that browser (localStorage)
-- Conservative multipliers: labour ×1.25, materials ×1.15, 15 % contingency
-- Multi-source 2026 Irish material pricing (Goodwins, Brooks, McMahons, Hanly, TJ O’Mahony, etc.)
-- Labour time guidance drawn from 5+ real extension programmes
+- Start / intake screen – just list the works
+- Auto-adds missing necessary packages based on keywords + construction type
+- Fully dynamic – add or remove any item or whole section afterwards
+- Permanent rate corrections (localStorage)
+- Conservative multipliers + 15 % contingency
 - Suggested sell price = cost × 2 (your 50 % margin)
-- Confidence tags per section
+- Multi-source 2026 Irish material pricing
 - Print / PDF ready
-- Fully offline once loaded – no backend required
+- Fully offline once loaded
 
 ## Deploy to Cloudflare Pages
 
 1. Connect this repo to Cloudflare Pages
-2. Build command: leave empty (static site)
-3. Output directory: `/` (root)
+2. Build command: leave empty
+3. Output directory: `/`
 4. Deploy
-
-Optional: drop `logo.jpeg` next to `index.html` if you want the full graphic logo (the app already has a clean brand mark).
-
-## How corrections work
-
-- Click any rate or quantity and change it → it is saved immediately and permanently for that browser.
-- Open **Edit Rates** to change the global unit rates (skip, concrete, PIR, day rates, etc.). These also persist.
-- **Reset All** clears everything back to the factory conservative defaults.
 
 ## Local use
 
-Just open `index.html` in any browser, or:
-
-```bash
-npx serve .
-```
+Open `index.html` in any browser.
