@@ -598,7 +598,7 @@
       const label = String(item.desc || "").trim();
       if (!label || label.toLowerCase() === "new item") return;
 
-      const normalise = value => String(value || "").trim().toLowerCase().replace(/\\s+/g, " ");
+      const normalise = value => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
       let key = Object.keys(rates).find(k => normalise(rates[k].label) === normalise(label));
       if (!key) {
         key = label.toLowerCase()
