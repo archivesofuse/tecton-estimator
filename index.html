@@ -358,7 +358,7 @@
         <button class="primary" onclick="saveRates()">Save Rates</button>
         <button onclick="closeRatesModal()">Cancel</button>
       </div>
-      <p class="note">These rates are stored in localStorage and used for every new estimate on this browser until you change them again.</p>
+      <p class="note">These rates are stored in localStorage. When you add an estimate item, enter its description and rate; it is automatically added here. Editing that item's rate updates its Global Rate for future estimates on this browser.</p>
     </div>
   </div>
 
@@ -592,9 +592,34 @@
     }
 
     // ========== ACTIONS ==========
+    // Add or refresh an estimate item in the reusable Global Rates library.
+    // The description is the stable match; editing its rate updates the saved global rate.
+    function syncItemToGlobalRates(item) {
+      const label = String(item.desc || "").trim();
+      if (!label || label.toLowerCase() === "new item") return;
+
+      const normalise = value => String(value || "").trim().toLowerCase().replace(/\\s+/g, " ");
+      let key = Object.keys(rates).find(k => normalise(rates[k].label) === normalise(label));
+      if (!key) {
+        key = label.toLowerCase()
+          .replace(/[^a-z0-9]+/g, "_")
+          .replace(/^_+|_+$/g, "") || "custom_rate";
+        const base = key;
+        let suffix = 2;
+        while (rates[key]) key = base + "_" + suffix++;
+        rates[key] = { label, value: Number(item.rate) || 0, unit: item.unit || "sum" };
+      } else {
+        rates[key].label = label;
+        rates[key].value = Number(item.rate) || 0;
+        rates[key].unit = item.unit || rates[key].unit || "sum";
+      }
+      localStorage.setItem("tecton_rates", JSON.stringify(rates));
+    }
+
     function updateItem(sIdx, iIdx, field, value) {
       if (field === "qty" || field === "rate") value = Number(value) || 0;
       sections[sIdx].items[iIdx][field] = value;
+      syncItemToGlobalRates(sections[sIdx].items[iIdx]);
       saveState();
       render();
     }
