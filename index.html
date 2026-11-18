@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TECTON Estimator</title>
 <style>
 :root{--r:#c41e3a;--d:#1a1a1a;--b:#0d0d0d;--g:#2a2a2a;--l:#f5f5f5;--m:#999;--bd:#3a3a3a}
@@ -17,7 +17,7 @@ button{background:var(--g);color:var(--l);border:1px solid var(--bd);padding:.4r
 button:hover{background:#3a3a3a}
 button.p{background:var(--r);border-color:var(--r);color:#fff;font-weight:600}
 button.p:hover{background:#a01830}
-button.d{background:0;border-color:#666;color:#ccc;padding:.2rem .45rem;font-size:.72rem}
+button.d{background:transparent;border-color:#666;color:#ccc;padding:.2rem .45rem;font-size:.72rem}
 button.d:hover{border-color:var(--r);color:var(--r)}
 button.s{padding:.28rem .55rem;font-size:.76rem}
 main{max-width:1050px;margin:0 auto;padding:1.2rem}
@@ -55,7 +55,6 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 .rr input{text-align:right;margin:0}
 .n{font-size:.76rem;color:var(--m);margin-top:.9rem;line-height:1.4}
 @media(max-width:700px){.row3,.meta{grid-template-columns:1fr}.line{grid-template-columns:1fr 65px 85px 85px 45px;font-size:.8rem}}
-@media print{body{background:#fff;color:#000}header,.toolbar,.add,button,.note{display:none!important}.line input{border:0;background:0;color:#000}}
 </style>
 </head>
 <body>
@@ -65,7 +64,7 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 <div><h1>TECTON</h1><div class="tag">Conservative Extension Estimator</div></div>
 </div>
 <div class="toolbar" id="tb" style="display:none">
-<button class="s" onclick="goStart()">← New Job</button>
+<button class="s" onclick="goStart()">New Job</button>
 <button class="s" onclick="openRates()">Edit Rates</button>
 <button class="s" onclick="window.print()">Print</button>
 </div>
@@ -75,37 +74,37 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 <div class="card">
 <h2>Describe the Job</h2>
 <p class="lead">List everything that needs doing. The estimator fills in anything missing that is normally required, then prices it conservatively.</p>
-<div class="hint"><strong>Example:</strong> Single storey rear SIP extension ~35m². Remove existing kitchen. New utility + toilet. New bathroom. Timber floor. Connect to house. Guardian kit. External render. Make good neighbour boundary.</div>
+<div class="hint"><strong>Example:</strong> Single storey rear SIP extension about 35m2. Remove existing kitchen. New utility and toilet. New bathroom. Timber floor. Connect to house. Guardian kit. External render. Make good neighbour boundary.</div>
 <label>Project / Address</label>
-<input id="iName" placeholder="e.g. 12 Oak Road extension"/>
+<input id="iName" placeholder="e.g. 12 Oak Road extension">
 <label>Client (optional)</label>
-<input id="iClient" placeholder="Client name"/>
+<input id="iClient" placeholder="Client name">
 <div class="row3">
-<div><label>Floor area m²</label><input type="number" id="iArea" value="35" min="5"/></div>
+<div><label>Floor area m2</label><input type="number" id="iArea" value="35" min="5"></div>
 <div><label>Storeys</label><select id="iStoreys"><option value="1">Single</option><option value="2">Two</option></select></div>
 <div><label>Type</label><select id="iType"><option value="sip">SIP / Guardian</option><option value="timber">Timber frame</option><option value="block">Block</option></select></div>
 </div>
 <label>What is included? (list everything)</label>
 <textarea id="iScope" placeholder="Paste or type the full list of works..."></textarea>
-<button class="p" onclick="run()">Generate Estimate →</button>
+<button class="p" id="btnGo" onclick="run()">Generate Estimate</button>
 <p class="n">System adds foundations, floor, insulation, prelims, cladding, internal works etc. if they are missing. You can still edit every line.</p>
 </div>
 </div>
 <div id="s2" class="screen">
 <div class="meta">
-<div><label>Project</label><input id="pName"/></div>
-<div><label>Client</label><input id="pClient"/></div>
-<div><label>Date</label><input type="date" id="pDate"/></div>
+<div><label>Project</label><input id="pName"></div>
+<div><label>Client</label><input id="pClient"></div>
+<div><label>Date</label><input type="date" id="pDate"></div>
 </div>
 <div class="note" id="note"></div>
 <div id="secs"></div>
 <div style="margin:1rem 0"><button class="p" onclick="addSec()">+ Add Section</button></div>
 <div class="box">
 <h3>Totals (Cost Only)</h3>
-<div class="tr"><span>Subtotal</span><span id="sub">€0</span></div>
-<div class="tr"><span>Contingency 15%</span><span id="cont">€0</span></div>
-<div class="tr g"><span>TOTAL COST TO COMPLETE</span><span id="grand">€0</span></div>
-<div class="tr" style="margin-top:.6rem;color:#aaa"><span>Suggested Sell (×2)</span><span id="sell" style="font-weight:700;color:#fff">€0</span></div>
+<div class="tr"><span>Subtotal</span><span id="sub">0</span></div>
+<div class="tr"><span>Contingency 15%</span><span id="cont">0</span></div>
+<div class="tr g"><span>TOTAL COST TO COMPLETE</span><span id="grand">0</span></div>
+<div class="tr" style="margin-top:.6rem;color:#aaa"><span>Suggested Sell (x2)</span><span id="sell" style="font-weight:700;color:#fff">0</span></div>
 <p class="n">Conservative cost only. Labour padded. Materials include wastage + buffer. Double for your 50% margin. Rate changes are permanent on this browser.</p>
 </div>
 </div>
@@ -114,130 +113,359 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 <div style="margin-top:1rem;display:flex;gap:.5rem"><button class="p" onclick="saveRates()">Save</button><button onclick="closeRates()">Cancel</button></div>
 <p class="n">Stored in localStorage on this browser.</p></div></div>
 <script>
-const R={skip:380,conc:155,mesh:90,pir:100,hard:85,lab:320,prelim:3750,sipm2:280,flm2:48,tw:68,tf:65};
-let secs=[];
-const P={
-prelims:{t:"Site & Safety / Prelims",c:"high",a:1,fn:(a,s)=>[
-{d:"6m3 Skip x2",q:Math.max(2,Math.ceil(a/25)),r:R.skip,u:"no",x:1},
-{d:"Heras / site security",q:1,r:450,u:"sum",x:1},
-{d:"Welfare / power",q:1,r:600,u:"sum",x:1},
-{d:"Prelims weeks",q:s===2?2:1,r:R.prelim,u:"wk",x:1}]},
-found:{t:"Foundations & Groundworks",c:"med",a:1,fn:(a)=>[
-{d:"Excavation & disposal",q:1,r:Math.round(a*70),u:"sum",x:1},
-{d:"Ready-mix concrete m3",q:Math.max(8,Math.round(a*.35)),r:R.conc,u:"m3",x:1},
-{d:"A393 mesh",q:Math.max(6,Math.ceil(a/5)),r:R.mesh,u:"sh",x:1},
-{d:"Hardcore / SR21",q:Math.max(10,Math.round(a*.4)),r:R.hard,u:"t",x:1},
-{d:"Labour dig & pour days",q:Math.max(4,Math.ceil(a/8)),r:R.lab,u:"day",x:1}]},
-floor:{t:"Floor Base & Insulation",c:"high",a:1,fn:(a)=>[
-{d:"150mm PIR",q:Math.ceil(a/2.8),r:R.pir,u:"sh",x:1},
-{d:"Radon / DPM",q:1,r:Math.round(a*7),u:"sum",x:1},
-{d:"Concrete slab m3",q:Math.max(4,Math.round(a*.15)),r:R.conc,u:"m3",x:1},
-{d:"Labour floor days",q:Math.max(3,Math.ceil(a/12)),r:R.lab,u:"day",x:1}]},
-sip:{t:"Guardian / SIP Kit & Erect",c:"med",k:["sip","guardian","panel"],fn:(a)=>[
-{d:"SIP / Guardian kit",q:1,r:Math.round(a*R.sipm2),u:"sum",x:1},
-{d:"Fittings / connections",q:1,r:Math.round(a*30),u:"sum",x:1},
-{d:"Crane / plant",q:1,r:950,u:"day",x:1},
-{d:"Erect labour days",q:Math.max(4,Math.ceil(a/10)),r:R.lab,u:"day",x:1}]},
-timber:{t:"Timber Frame",c:"med",k:["timber"],fn:(a)=>[
-{d:"Timber frame kit",q:1,r:Math.round(a*220),u:"sum",x:1},
-{d:"Erect labour + plant",q:Math.max(5,Math.ceil(a/8)),r:R.lab,u:"day",x:1}]},
-block:{t:"Blockwork Superstructure",c:"med",k:["block","masonry"],fn:(a,s)=>[
-{d:"Blockwork m2",q:Math.round(a*(s===2?2.8:1.6)),r:95,u:"m2",x:1},
-{d:"Labour block days",q:Math.max(8,Math.ceil(a/4)),r:R.lab,u:"day",x:1}]},
-clad:{t:"External Cladding & Weather",c:"med",a:1,fn:(a)=>[
-{d:"Cladding / render allowance",q:1,r:Math.round(a*110),u:"sum",x:1},
-{d:"EPDM / roof membrane",q:1,r:Math.round(a*45),u:"sum",x:1},
-{d:"Windows / doors allowance",q:1,r:Math.round(a*160),u:"sum",x:1},
-{d:"Labour external days",q:Math.max(6,Math.ceil(a/6)),r:R.lab,u:"day",x:1}]},
-int:{t:"Internal Works (Extension)",c:"high",a:1,fn:(a)=>[
-{d:"Stud + insul + board",q:1,r:Math.round(a*85),u:"sum",x:1},
-{d:"1st fix plumbing",q:1,r:Math.round(a*45),u:"sum",x:1},
-{d:"Electrics 1st+2nd",q:1,r:Math.round(a*60),u:"sum",x:1},
-{d:"Skim plaster",q:1,r:Math.round(a*55),u:"sum",x:1},
-{d:"Skirting / doors",q:1,r:Math.round(a*40),u:"sum",x:1}]},
-exist:{t:"Existing House Works",c:"med",k:["existing","kitchen","remove","opening","radiator","utility","toilet","make good"],fn:()=>[
-{d:"Remove kitchen + skip",q:1,r:950,u:"sum",x:1},
-{d:"New opening into house",q:1,r:1400,u:"sum",x:1},
-{d:"Relocate radiator",q:1,r:280,u:"sum",x:1},
-{d:"Stud toilet/utility + sound",q:1,r:2200,u:"sum",x:1},
-{d:"Doors + ironmongery",q:2,r:450,u:"no",x:1},
-{d:"Electrics relocate",q:1,r:1100,u:"sum",x:1},
-{d:"Floor / wall make-good",q:1,r:850,u:"sum",x:1}]},
-flr:{t:"Flooring",c:"high",k:["flooring","timber floor","t&g"],fn:(a)=>[
-{d:"Timber floor + underlay",q:a,r:R.flm2,u:"m2",x:1},
-{d:"Skirting",q:1,r:Math.round(a*12),u:"sum",x:1}]},
-bath:{t:"Bathroom",c:"med",k:["bathroom","shower","toilet","tiles","suite"],fn:()=>[
-{d:"Floor tiles + labour",q:4,r:R.tf,u:"m2",x:1},
-{d:"Wall tiles + labour",q:20,r:R.tw,u:"m2",x:1},
-{d:"Toilet window + works",q:1,r:650,u:"sum",x:1},
-{d:"Bathroom suite",q:1,r:1800,u:"sum",x:1},
-{d:"Radiators + 2nd fix",q:1,r:980,u:"sum",x:1}]},
-ext:{t:"Exterior Attendances",c:"low",k:["boundary","neighbour","shed","footpath"],fn:()=>[
-{d:"Boundary / footpath repair",q:1,r:1200,u:"sum",x:1},
-{d:"Ground make-good (shed)",q:1,r:650,u:"sum",x:1},
-{d:"Attendances / clean",q:1,r:800,u:"sum",x:1}]}
+const R = {skip:380, conc:155, mesh:90, pir:100, hard:85, lab:320, prelim:3750, sipm2:280, flm2:48, tw:68, tf:65};
+let secs = [];
+
+const P = {
+  prelims: {t:"Site & Safety / Prelims", c:"high", fn:function(a,s){return [
+    {d:"6m3 Skip x2", q:Math.max(2,Math.ceil(a/25)), r:R.skip, x:1},
+    {d:"Heras / site security", q:1, r:450, x:1},
+    {d:"Welfare / power", q:1, r:600, x:1},
+    {d:"Prelims weeks", q:s===2?2:1, r:R.prelim, x:1}
+  ]}},
+  found: {t:"Foundations & Groundworks", c:"med", fn:function(a){return [
+    {d:"Excavation & disposal", q:1, r:Math.round(a*70), x:1},
+    {d:"Ready-mix concrete m3", q:Math.max(8,Math.round(a*0.35)), r:R.conc, x:1},
+    {d:"A393 mesh", q:Math.max(6,Math.ceil(a/5)), r:R.mesh, x:1},
+    {d:"Hardcore / SR21", q:Math.max(10,Math.round(a*0.4)), r:R.hard, x:1},
+    {d:"Labour dig & pour days", q:Math.max(4,Math.ceil(a/8)), r:R.lab, x:1}
+  ]}},
+  floor: {t:"Floor Base & Insulation", c:"high", fn:function(a){return [
+    {d:"150mm PIR", q:Math.ceil(a/2.8), r:R.pir, x:1},
+    {d:"Radon / DPM", q:1, r:Math.round(a*7), x:1},
+    {d:"Concrete slab m3", q:Math.max(4,Math.round(a*0.15)), r:R.conc, x:1},
+    {d:"Labour floor days", q:Math.max(3,Math.ceil(a/12)), r:R.lab, x:1}
+  ]}},
+  sip: {t:"Guardian / SIP Kit & Erect", c:"med", k:["sip","guardian","panel"], fn:function(a){return [
+    {d:"SIP / Guardian kit", q:1, r:Math.round(a*R.sipm2), x:1},
+    {d:"Fittings / connections", q:1, r:Math.round(a*30), x:1},
+    {d:"Crane / plant", q:1, r:950, x:1},
+    {d:"Erect labour days", q:Math.max(4,Math.ceil(a/10)), r:R.lab, x:1}
+  ]}},
+  timber: {t:"Timber Frame", c:"med", k:["timber"], fn:function(a){return [
+    {d:"Timber frame kit", q:1, r:Math.round(a*220), x:1},
+    {d:"Erect labour + plant", q:Math.max(5,Math.ceil(a/8)), r:R.lab, x:1}
+  ]}},
+  block: {t:"Blockwork Superstructure", c:"med", k:["block","masonry"], fn:function(a,s){return [
+    {d:"Blockwork m2", q:Math.round(a*(s===2?2.8:1.6)), r:95, x:1},
+    {d:"Labour block days", q:Math.max(8,Math.ceil(a/4)), r:R.lab, x:1}
+  ]}},
+  clad: {t:"External Cladding & Weather", c:"med", fn:function(a){return [
+    {d:"Cladding / render allowance", q:1, r:Math.round(a*110), x:1},
+    {d:"EPDM / roof membrane", q:1, r:Math.round(a*45), x:1},
+    {d:"Windows / doors allowance", q:1, r:Math.round(a*160), x:1},
+    {d:"Labour external days", q:Math.max(6,Math.ceil(a/6)), r:R.lab, x:1}
+  ]}},
+  int: {t:"Internal Works (Extension)", c:"high", fn:function(a){return [
+    {d:"Stud + insul + board", q:1, r:Math.round(a*85), x:1},
+    {d:"1st fix plumbing", q:1, r:Math.round(a*45), x:1},
+    {d:"Electrics 1st+2nd", q:1, r:Math.round(a*60), x:1},
+    {d:"Skim plaster", q:1, r:Math.round(a*55), x:1},
+    {d:"Skirting / doors", q:1, r:Math.round(a*40), x:1}
+  ]}},
+  exist: {t:"Existing House Works", c:"med", k:["existing","kitchen","remove","opening","radiator","utility","toilet","make good"], fn:function(){return [
+    {d:"Remove kitchen + skip", q:1, r:950, x:1},
+    {d:"New opening into house", q:1, r:1400, x:1},
+    {d:"Relocate radiator", q:1, r:280, x:1},
+    {d:"Stud toilet/utility + sound", q:1, r:2200, x:1},
+    {d:"Doors + ironmongery", q:2, r:450, x:1},
+    {d:"Electrics relocate", q:1, r:1100, x:1},
+    {d:"Floor / wall make-good", q:1, r:850, x:1}
+  ]}},
+  flr: {t:"Flooring", c:"high", k:["flooring","timber floor","t&g"], fn:function(a){return [
+    {d:"Timber floor + underlay", q:a, r:R.flm2, x:1},
+    {d:"Skirting", q:1, r:Math.round(a*12), x:1}
+  ]}},
+  bath: {t:"Bathroom", c:"med", k:["bathroom","shower","toilet","tiles","suite"], fn:function(){return [
+    {d:"Floor tiles + labour", q:4, r:R.tf, x:1},
+    {d:"Wall tiles + labour", q:20, r:R.tw, x:1},
+    {d:"Toilet window + works", q:1, r:650, x:1},
+    {d:"Bathroom suite", q:1, r:1800, x:1},
+    {d:"Radiators + 2nd fix", q:1, r:980, x:1}
+  ]}},
+  ext: {t:"Exterior Attendances", c:"low", k:["boundary","neighbour","shed","footpath"], fn:function(){return [
+    {d:"Boundary / footpath repair", q:1, r:1200, x:1},
+    {d:"Ground make-good (shed)", q:1, r:650, x:1},
+    {d:"Attendances / clean", q:1, r:800, x:1}
+  ]}}
 };
-function match(t,ks){t=t.toLowerCase();return ks&&ks.some(k=>t.includes(k))}
-function build(k,a,s){const p=P[k];return{id:k,t:p.t,c:p.c,items:p.fn(a,s).map(i=>({...i}))}}
-function has(arr,id){return arr.some(x=>x.id===id)}
-function run(){
-const txt=document.getElementById("iScope").value.trim();
-const a=+document.getElementById("iArea").value||35;
-const s=+document.getElementById("iStoreys").value||1;
-const typ=document.getElementById("iType").value||"sip";
-const name=document.getElementById("iName").value.trim()||"Extension";
-const client=document.getElementById("iClient").value.trim();
-if(txt.length<12){alert("Please describe the job in more detail.");return}
-const low=txt.toLowerCase();
-const det=[],miss=[],ns=[];
-if(typ==="sip"||match(low,P.sip.k)){det.push("SIP");ns.push(build("sip",a,s))}
-else if(typ==="timber"||match(low,P.timber.k)){det.push("Timber");ns.push(build("timber",a,s))}
-else if(typ==="block"||match(low,P.block.k)){det.push("Block");ns.push(build("block",a,s))}
-else{det.push("SIP (default)");ns.push(build("sip",a,s))}
-["prelims","found","floor","clad","int"].forEach(k=>{if(!has(ns,k)){ns.push(build(k,a,s));miss.push(P[k].t)}});
-if(match(low,P.exist.k)||match(low,["kitchen","opening","utility","toilet"])){if(!has(ns,"exist")){ns.push(build("exist",a,s));det.push("Existing house")}}
-else{ns.push(build("exist",a,s));miss.push("Existing house works")}
-if(match(low,P.flr.k)||match(low,["floor"])){if(!has(ns,"flr")){ns.push(build("flr",a,s));det.push("Flooring")}}
-else{ns.push(build("flr",a,s));miss.push("Flooring")}
-if(match(low,P.bath.k)){if(!has(ns,"bath")){ns.push(build("bath",a,s));det.push("Bathroom")}}
-if(match(low,P.ext.k)||match(low,["shed","boundary"])){if(!has(ns,"ext")){ns.push(build("ext",a,s));det.push("Exterior")}}
-else{ns.push(build("ext",a,s));miss.push("Exterior attendances")}
-const ord=["prelims","found","floor","sip","timber","block","clad","int","exist","flr","bath","ext"];
-ns.sort((x,y)=>ord.indexOf(x.id)-ord.indexOf(y.id));
-secs=ns;
-document.getElementById("pName").value=name;
-document.getElementById("pClient").value=client;
-document.getElementById("pDate").value=new Date().toISOString().slice(0,10);
-document.getElementById("note").innerHTML="<strong>Scope analysed.</strong> "+a+" m2 · "+(s===2?"Two":"Single")+" storey · "+typ.toUpperCase()+".<br><strong>Detected:</strong> "+(det.join(", ")||"core works")+".<br><strong>Auto-added:</strong> "+(miss.join(", ")||"none")+". Green auto tags = system added.";
-showEst();render();
+
+function match(t, ks) {
+  if (!ks) return false;
+  t = t.toLowerCase();
+  for (var i = 0; i < ks.length; i++) {
+    if (t.indexOf(ks[i]) !== -1) return true;
+  }
+  return false;
 }
-function showEst(){document.getElementById("s1").classList.remove("on");document.getElementById("s2").classList.add("on");document.getElementById("tb").style.display="flex"}
-function goStart(){document.getElementById("s2").classList.remove("on");document.getElementById("s1").classList.add("on");document.getElementById("tb").style.display="none"}
-function st(s){return s.items.reduce((t,i)=>t+(+i.q*+i.r),0)}
-function render(){
-const c=document.getElementById("secs");c.innerHTML="";
-secs.forEach((s,si)=>{
-const el=document.createElement("div");el.className="sec";
-el.innerHTML="<div class=\"sec-h\" onclick=\"tog(this)\"><h2>"+s.t+"</h2><span class=\"conf c"+s.c[0]+"\">"+s.c+"</span><button class=\"d s\" onclick=\"event.stopPropagation();rmSec("+si+")\">Remove</button></div><div>"+s.items.map(function(it,ii){return "<div class=\"line\"><div><input value=\""+esc(it.d)+"\" onchange=\"upd("+si+","+ii+",'d',this.value)\"/>"+(it.x?"<span class=\"auto\">auto</span>":"")+"</div><input type=\"number\" value=\""+it.q+"\" step=\".1\" min=\"0\" onchange=\"upd("+si+","+ii+",'q',this.value)\"/><input type=\"number\" value=\""+it.r+"\" step=\"1\" min=\"0\" onchange=\"upd("+si+","+ii+",'r',this.value)\"/><div class=\"tot\">€"+(+it.q*+it.r).toFixed(0)+"</div><div><button class=\"d\" onclick=\"rmIt("+si+","+ii+")\">X</button></div></div>"}).join("")+"<div class=\"add\"><button class=\"s\" onclick=\"addIt("+si+")\">+ Add Item</button></div></div><div class=\"sec-f\"><span>Section total</span><span class=\"sec-t\">€"+st(s).toFixed(0)+"</span></div>";
-c.appendChild(el)});
-const sub=secs.reduce(function(t,s){return t+st(s)},0),cont=sub*.15,g=sub+cont;
-document.getElementById("sub").textContent="€"+sub.toFixed(0);
-document.getElementById("cont").textContent="€"+cont.toFixed(0);
-document.getElementById("grand").textContent="€"+g.toFixed(0);
-document.getElementById("sell").textContent="€"+(g*2).toFixed(0);
+
+function build(k, a, s) {
+  var p = P[k];
+  var items = p.fn(a, s);
+  var out = [];
+  for (var i = 0; i < items.length; i++) {
+    out.push({d: items[i].d, q: items[i].q, r: items[i].r, x: items[i].x || 0});
+  }
+  return {id: k, t: p.t, c: p.c, items: out};
 }
-function esc(s){return String(s).replace(/&/g,"&").replace(/</g,"<").replace(/>/g,">").replace(/\"/g,""")}
-function upd(si,ii,f,v){if(f==="q"||f==="r")v=+v||0;secs[si].items[ii][f]=v;if(f==="r"||f==="q")secs[si].items[ii].x=0;render()}
-function addIt(si){secs[si].items.push({d:"New item",q:1,r:0,u:"sum",x:0});render()}
-function rmIt(si,ii){if(secs[si].items.length<=1&&!confirm("Remove last item?"))return;secs[si].items.splice(ii,1);render()}
-function addSec(){const t=prompt("Section name","New Section");if(!t)return;secs.push({id:"c"+Date.now(),t:t,c:"med",items:[{d:"New item",q:1,r:0,u:"sum",x:0}]});render()}
-function rmSec(si){if(!confirm("Remove section?"))return;secs.splice(si,1);render()}
-function tog(h){const b=h.nextElementSibling;b.style.display=b.style.display==="none"?"":"none"}
-function openRates(){const l=document.getElementById("rl");l.innerHTML="";Object.keys(R).forEach(function(k){const r=document.createElement("div");r.className="rr";r.innerHTML="<label>"+k+"</label><input type=\"number\" data-k=\""+k+"\" value=\""+R[k]+"\"/>";l.appendChild(r)});document.getElementById("rm").classList.add("on")}
-function closeRates(){document.getElementById("rm").classList.remove("on")}
-function saveRates(){document.querySelectorAll("#rl input").forEach(function(i){R[i.dataset.k]=+i.value||0});try{localStorage.setItem("tecton_R",JSON.stringify(R))}catch(e){}closeRates();alert("Rates saved")}
-try{const s=localStorage.getItem("tecton_R");if(s)Object.assign(R,JSON.parse(s))}catch(e){}
-document.getElementById("pDate").value=new Date().toISOString().slice(0,10);
+
+function has(arr, id) {
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i].id === id) return true;
+  }
+  return false;
+}
+
+function run() {
+  try {
+    var txt = document.getElementById("iScope").value.trim();
+    var a = parseFloat(document.getElementById("iArea").value) || 35;
+    var s = parseInt(document.getElementById("iStoreys").value) || 1;
+    var typ = document.getElementById("iType").value || "sip";
+    var name = document.getElementById("iName").value.trim() || "Extension";
+    var client = document.getElementById("iClient").value.trim();
+
+    if (txt.length < 10) {
+      alert("Please describe the job in more detail (at least a few words).");
+      return;
+    }
+
+    var low = txt.toLowerCase();
+    var det = [];
+    var miss = [];
+    var ns = [];
+
+    if (typ === "sip" || match(low, P.sip.k)) {
+      det.push("SIP");
+      ns.push(build("sip", a, s));
+    } else if (typ === "timber" || match(low, P.timber.k)) {
+      det.push("Timber");
+      ns.push(build("timber", a, s));
+    } else if (typ === "block" || match(low, P.block.k)) {
+      det.push("Block");
+      ns.push(build("block", a, s));
+    } else {
+      det.push("SIP (default)");
+      ns.push(build("sip", a, s));
+    }
+
+    var always = ["prelims", "found", "floor", "clad", "int"];
+    for (var i = 0; i < always.length; i++) {
+      var k = always[i];
+      if (!has(ns, k)) {
+        ns.push(build(k, a, s));
+        miss.push(P[k].t);
+      }
+    }
+
+    if (match(low, P.exist.k) || match(low, ["kitchen", "opening", "utility", "toilet"])) {
+      if (!has(ns, "exist")) {
+        ns.push(build("exist", a, s));
+        det.push("Existing house");
+      }
+    } else {
+      ns.push(build("exist", a, s));
+      miss.push("Existing house works");
+    }
+
+    if (match(low, P.flr.k) || match(low, ["floor"])) {
+      if (!has(ns, "flr")) {
+        ns.push(build("flr", a, s));
+        det.push("Flooring");
+      }
+    } else {
+      ns.push(build("flr", a, s));
+      miss.push("Flooring");
+    }
+
+    if (match(low, P.bath.k)) {
+      if (!has(ns, "bath")) {
+        ns.push(build("bath", a, s));
+        det.push("Bathroom");
+      }
+    }
+
+    if (match(low, P.ext.k) || match(low, ["shed", "boundary"])) {
+      if (!has(ns, "ext")) {
+        ns.push(build("ext", a, s));
+        det.push("Exterior");
+      }
+    } else {
+      ns.push(build("ext", a, s));
+      miss.push("Exterior attendances");
+    }
+
+    var ord = ["prelims", "found", "floor", "sip", "timber", "block", "clad", "int", "exist", "flr", "bath", "ext"];
+    ns.sort(function(x, y) {
+      return ord.indexOf(x.id) - ord.indexOf(y.id);
+    });
+
+    secs = ns;
+
+    document.getElementById("pName").value = name;
+    document.getElementById("pClient").value = client;
+    document.getElementById("pDate").value = new Date().toISOString().slice(0, 10);
+
+    var noteHtml = "<strong>Scope analysed.</strong> " + a + " m2 · " + (s === 2 ? "Two" : "Single") + " storey · " + typ.toUpperCase() + ".<br>";
+    noteHtml += "<strong>Detected:</strong> " + (det.length ? det.join(", ") : "core works") + ".<br>";
+    noteHtml += "<strong>Auto-added:</strong> " + (miss.length ? miss.join(", ") : "none") + ". Green auto tags = system added.";
+    document.getElementById("note").innerHTML = noteHtml;
+
+    showEst();
+    render();
+  } catch (err) {
+    alert("Error: " + err.message);
+    console.error(err);
+  }
+}
+
+function showEst() {
+  document.getElementById("s1").classList.remove("on");
+  document.getElementById("s2").classList.add("on");
+  document.getElementById("tb").style.display = "flex";
+}
+
+function goStart() {
+  document.getElementById("s2").classList.remove("on");
+  document.getElementById("s1").classList.add("on");
+  document.getElementById("tb").style.display = "none";
+}
+
+function st(s) {
+  var t = 0;
+  for (var i = 0; i < s.items.length; i++) {
+    t += (Number(s.items[i].q) || 0) * (Number(s.items[i].r) || 0);
+  }
+  return t;
+}
+
+function esc(str) {
+  return String(str)
+    .replace(/&/g, "&")
+    .replace(/</g, "<")
+    .replace(/>/g, ">")
+    .replace(/"/g, """);
+}
+
+function render() {
+  var c = document.getElementById("secs");
+  c.innerHTML = "";
+  for (var si = 0; si < secs.length; si++) {
+    var s = secs[si];
+    var el = document.createElement("div");
+    el.className = "sec";
+
+    var confClass = s.c === "high" ? "ch" : (s.c === "med" ? "cm" : "cl");
+    var html = '<div class="sec-h" onclick="tog(this)"><h2>' + esc(s.t) + '</h2>';
+    html += '<span class="conf ' + confClass + '">' + s.c + '</span>';
+    html += '<button class="d s" onclick="event.stopPropagation();rmSec(' + si + ')">Remove</button></div><div>';
+
+    for (var ii = 0; ii < s.items.length; ii++) {
+      var it = s.items[ii];
+      var total = (Number(it.q) || 0) * (Number(it.r) || 0);
+      html += '<div class="line">';
+      html += '<div><input value="' + esc(it.d) + '" onchange="upd(' + si + ',' + ii + ',\'d\',this.value)">';
+      if (it.x) html += '<span class="auto">auto</span>';
+      html += '</div>';
+      html += '<input type="number" value="' + it.q + '" step="0.1" min="0" onchange="upd(' + si + ',' + ii + ',\'q\',this.value)">';
+      html += '<input type="number" value="' + it.r + '" step="1" min="0" onchange="upd(' + si + ',' + ii + ',\'r\',this.value)">';
+      html += '<div class="tot">' + total.toFixed(0) + '</div>';
+      html += '<div><button class="d" onclick="rmIt(' + si + ',' + ii + ')">X</button></div>';
+      html += '</div>';
+    }
+
+    html += '<div class="add"><button class="s" onclick="addIt(' + si + ')">+ Add Item</button></div></div>';
+    html += '<div class="sec-f"><span>Section total</span><span class="sec-t">' + st(s).toFixed(0) + '</span></div>';
+
+    el.innerHTML = html;
+    c.appendChild(el);
+  }
+
+  var sub = 0;
+  for (var i = 0; i < secs.length; i++) sub += st(secs[i]);
+  var cont = sub * 0.15;
+  var g = sub + cont;
+  document.getElementById("sub").textContent = sub.toFixed(0);
+  document.getElementById("cont").textContent = cont.toFixed(0);
+  document.getElementById("grand").textContent = g.toFixed(0);
+  document.getElementById("sell").textContent = (g * 2).toFixed(0);
+}
+
+function upd(si, ii, f, v) {
+  if (f === "q" || f === "r") v = Number(v) || 0;
+  secs[si].items[ii][f] = v;
+  if (f === "r" || f === "q") secs[si].items[ii].x = 0;
+  render();
+}
+
+function addIt(si) {
+  secs[si].items.push({d: "New item", q: 1, r: 0, x: 0});
+  render();
+}
+
+function rmIt(si, ii) {
+  if (secs[si].items.length <= 1) {
+    if (!confirm("Remove last item?")) return;
+  }
+  secs[si].items.splice(ii, 1);
+  render();
+}
+
+function addSec() {
+  var t = prompt("Section name", "New Section");
+  if (!t) return;
+  secs.push({id: "c" + Date.now(), t: t, c: "med", items: [{d: "New item", q: 1, r: 0, x: 0}]});
+  render();
+}
+
+function rmSec(si) {
+  if (!confirm("Remove section?")) return;
+  secs.splice(si, 1);
+  render();
+}
+
+function tog(h) {
+  var b = h.nextElementSibling;
+  b.style.display = b.style.display === "none" ? "" : "none";
+}
+
+function openRates() {
+  var l = document.getElementById("rl");
+  l.innerHTML = "";
+  var keys = Object.keys(R);
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    var r = document.createElement("div");
+    r.className = "rr";
+    r.innerHTML = "<label>" + k + "</label><input type=\"number\" data-k=\"" + k + "\" value=\"" + R[k] + "\">";
+    l.appendChild(r);
+  }
+  document.getElementById("rm").classList.add("on");
+}
+
+function closeRates() {
+  document.getElementById("rm").classList.remove("on");
+}
+
+function saveRates() {
+  var inputs = document.querySelectorAll("#rl input");
+  for (var i = 0; i < inputs.length; i++) {
+    R[inputs[i].dataset.k] = Number(inputs[i].value) || 0;
+  }
+  try { localStorage.setItem("tecton_R", JSON.stringify(R)); } catch (e) {}
+  closeRates();
+  alert("Rates saved");
+}
+
+try {
+  var saved = localStorage.getItem("tecton_R");
+  if (saved) {
+    var parsed = JSON.parse(saved);
+    for (var k in parsed) R[k] = parsed[k];
+  }
+} catch (e) {}
+
+document.getElementById("pDate").value = new Date().toISOString().slice(0, 10);
 </script>
 </body>
 </html>
