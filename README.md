@@ -36,3 +36,14 @@ Just open `index.html` in any browser, or:
 ```bash
 npx serve .
 ```
+
+## Live item price research
+
+The app includes a Cloudflare Pages Function at `functions/api/price-search.js`.
+When a new estimate item description is entered and committed (focus leaves the description field), the function searches the live web for Irish listings, including Chadwicks, Goodwins, Brooks, TJ O'Mahony, McMahons, Woodie's, Ganly's and wider specialist/web results.
+
+Cloudflare Pages automatically deploys files in the `functions/` directory as Pages Functions. Deploy this repository as a Cloudflare Pages project with the root as the output directory; no separate API key is required for the DuckDuckGo HTML search integration.
+
+The estimator extracts euro prices visible in search-result titles/snippets, uses the median of the extracted prices as the suggested rate, updates the estimate line and saves the item to Global Rates. Each returned result is shown as a clickable source with its title, domain, displayed price (when found), and the date checked. Results with no extractable price are shown as listings only. When no price is found, the app leaves the entered rate unchanged and allows manual entry.
+
+Important: this is live web-search discovery, not direct supplier inventory/API access. Search snippets can be stale, omit VAT, reflect a different pack size, or show a price for a similar rather than identical product. Verify the linked listing and unit before accepting the suggested rate. The app does not invent a rate when search results contain no detectable euro price.
