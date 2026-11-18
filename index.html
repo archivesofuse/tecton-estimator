@@ -1,8 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TECTON Estimator</title>
-  <!-- truncated for safety - will fix properly -->
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>TECTON Estimator</title>
+<style>
+:root{--r:#c41e3a;--d:#1a1a1a;--b:#0d0d0d;--g:#2a2a2a;--l:#f5f5f5;--m:#999;--bd:#3a3a3a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:var(--b);color:var(--l);line-height:1.45;min-height:100vh}
+header{background:linear-gradient(180deg,var(--d),var(--b));border-bottom:3px solid var(--r);padding:.9rem 1.4rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:100}
+.logo{width:44px;height:44px;background:var(--r);border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.3rem;color:#fff}
+h1{font-size:1.5rem;font-weight:800;letter-spacing:.05em;color:var(--r);margin:0}
+.tag{font-size:.72rem;color:var(--m)}
+.toolbar{margin-left:auto;display:flex;gap:.4rem;flex-wrap:wrap}
+button{background:var(--g);color:var(--l);border:1px solid var(--bd);padding:.4rem .8rem;border-radius:4px;cursor:pointer;font-size:.84rem}
+button:hover{background:#3a3a3a}
+button.p{background:var(--r);border-color:var(--r);color:#fff;font-weight:600}
+button.p:hover{background:#a01830}
+button.d{background:0;border-color:#666;color:#ccc;padding:.2rem .45rem;font-size:.72rem}
+button.d:hover{border-color:var(--r);color:var(--r)}
+button.s{padding:.28rem .55rem;font-size:.76rem}
+main{max-width:1050px;margin:0 auto;padding:1.2rem}
+.screen{display:none}.screen.on{display:block}
+.card{background:var(--d);border:1px solid var(--bd);border-radius:8px;padding:1.4rem;max-width:760px;margin:0 auto}
+.card h2{color:var(--r);margin-bottom:.4rem}
+.card .lead{color:#ccc;margin-bottom:1.1rem;font-size:.93rem}
+label{display:block;font-size:.72rem;color:var(--m);margin-bottom:3px;text-transform:uppercase;letter-spacing:.03em}
+input,textarea,select{width:100%;background:var(--b);border:1px solid var(--bd);color:#fff;padding:.55rem .7rem;border-radius:4px;font-size:.93rem;font-family:inherit;margin-bottom:.9rem}
+textarea{min-height:200px;resize:vertical;line-height:1.5}
+.hint{background:#151515;border-left:3px solid var(--r);padding:.7rem 1rem;margin-bottom:1.1rem;font-size:.84rem;color:#bbb}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;margin-bottom:.9rem}
+.meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;margin-bottom:1.1rem;background:var(--d);padding:.9rem;border-radius:6px;border:1px solid var(--bd)}
+.note{background:#1f1f1f;border:1px solid var(--bd);border-radius:6px;padding:.8rem 1rem;margin-bottom:1.1rem;font-size:.86rem;color:#bbb}
+.sec{background:var(--d);border:1px solid var(--bd);border-radius:6px;margin-bottom:.9rem;overflow:hidden}
+.sec-h{display:flex;align-items:center;gap:.6rem;padding:.65rem 1rem;background:#222;border-bottom:1px solid var(--bd);cursor:pointer}
+.sec-h h2{font-size:.95rem;font-weight:600;flex:1;margin:0}
+.conf{font-size:.7rem;padding:.15rem .4rem;border-radius:3px;font-weight:600;text-transform:uppercase}
+.ch{background:#1b5e20;color:#a5d6a7}.cm{background:#e65100;color:#ffcc80}.cl{background:#b71c1c;color:#ef9a9a}
+.line{display:grid;grid-template-columns:1fr 80px 100px 100px 55px;gap:.4rem;align-items:center;padding:.35rem 1rem;border-bottom:1px solid #2a2a2a;font-size:.86rem}
+.line input{margin:0;padding:.3rem .4rem;font-size:.84rem}
+.tot{font-weight:600;color:#e0e0e0;text-align:right}
+.sec-f{display:flex;justify-content:space-between;padding:.55rem 1rem;background:#1f1f1f;border-top:1px solid var(--bd);font-size:.88rem}
+.sec-t{font-weight:700;color:var(--r)}
+.add{padding:.45rem 1rem;border-top:1px dashed #333}
+.box{background:var(--d);border:2px solid var(--r);border-radius:6px;padding:1.2rem;margin-top:1.3rem}
+.box h3{color:var(--r);margin-bottom:.6rem}
+.tr{display:flex;justify-content:space-between;padding:.3rem 0;font-size:.93rem}
+.tr.g{font-size:1.2rem;font-weight:800;border-top:1px solid var(--bd);margin-top:.4rem;padding-top:.65rem;color:var(--r)}
+.auto{display:inline-block;background:#1b5e20;color:#a5d6a7;font-size:.68rem;padding:.1rem .35rem;border-radius:3px;margin-left:.3rem;font-weight:600}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center}
+.modal.on{display:flex}
+.modal .m{background:var(--d);border:1px solid var(--bd);border-radius:8px;padding:1.2rem;width:90%;max-width:480px;max-height:80vh;overflow-y:auto}
+.rr{display:grid;grid-template-columns:1fr 90px;gap:.4rem;margin-bottom:.4rem;align-items:center;font-size:.86rem}
+.rr input{text-align:right;margin:0}
+.n{font-size:.76rem;color:var(--m);margin-top:.9rem;line-height:1.4}
+@media(max-width:700px){.row3,.meta{grid-template-columns:1fr}.line{grid-template-columns:1fr 65px 85px 85px 45px;font-size:.8rem}}
+@media print{body{background:#fff;color:#000}header,.toolbar,.add,button,.note{display:none!important}.line input{border:0;background:0;color:#000}}
+</style>
+</head>
+<body>
+<header>
+<div style="display:flex;align-items:center;gap:.7rem">
+<div class="logo">T</div>
+<div><h1>TECTON</h1><div class="tag">Conservative Extension Estimator</div></div>
+</div>
+<div class="toolbar" id="tb" style="display:none">
+<button class="s" onclick="goStart()">← New Job</button>
+<button class="s" onclick="openRates()">Edit Rates</button>
+<button class="s" onclick="window.print()">Print</button>
+</div>
+</header>
+<main>
+<!-- START -->
+<div id="s1" class="screen on">
+<div class="card">
+<h2>Describe the Job</h2>
+<p class="lead">List everything that needs doing. The estimator fills in anything missing that is normally required, then prices it conservatively.</p>
+<div class="hint"><strong>Example:</strong> Single storey rear SIP extension ~35m². Remove existing kitchen. New utility + toilet. New bathroom. Timber floor. Connect to house. Guardian kit. External render. Make good neighbour boundary.</div>
+<label>Project / Address</label>
+<input id="iName" placeholder="e.g. 12 Oak Road extension"/>
+<label>Client (optional)</label>
+<input id="iClient" placeholder="Client name"/>
+<div class="row3">
+<div><label>Floor area m²</label><input type="number" id="iArea" value="35" min="5"/></div>
+<div><label>Storeys</label><select id="iStoreys"><option value="1">Single</option><option value="2">Two</option></select></div>
+<div><label>Type</label><select id="iType"><option value="sip">SIP / Guardian</option><option value="timber">Timber frame</option><option value="block">Block</option></select></div>
+</div>
+<label>What is included? (list everything)</label>
+<textarea id="iScope" placeholder="Paste or type the full list of works..."></textarea>
+<button class="p" onclick="run()">Generate Estimate →</button>
+<p class="n">System adds foundations, floor, insulation, prelims, cladding, internal works etc. if they are missing. You can still edit every line.</p>
+</div>
+</div>
+<!-- ESTIMATE -->
+<div id="s2" class="screen">
+<div class="meta">
+<div><label>Project</label><input id="pName"/></div>
+<div><label>Client</label><input id="pClient"/></div>
+<div><label>Date</label><input type="date" id="pDate"/></div>
+</div>
+<div class="note" id="note"></div>
+<div id="secs"></div>
+<div style="margin:1rem 0"><button class="p" onclick="addSec()">+ Add Section</button></div>
+<div class="box">
+<h3>Totals (Cost Only)</h3>
+<div class="tr"><span>Subtotal</span><span id="sub">€0</span></div>
+<div class="tr"><span>Contingency 15%</span><span id="cont">€0</span></div>
+<div class="tr g"><span>TOTAL COST TO COMPLETE</span><span id="grand">€0</span></div>
+<div class="tr" style="margin-top:.6rem;color:#aaa"><span>Suggested Sell (×2)</span><span id="sell" style="font-weight:700;color:#fff">€0</span></div>
+<p class="n">Conservative cost only. Labour padded. Materials include wastage + buffer. Double for your 50% margin. Rate changes are permanent on this browser.</p>
+</div>
+</div>
+</main>
+<div class="modal" id="rm"><div class="m"><h3 style="color:var(--r);margin-bottom:.8rem">Edit Rates (permanent)</h3><div id="rl"></div>
+<div style="margin-top:1rem;display:flex;gap:.5rem"><button class="p" onclick="saveRates()">Save</button><button onclick="closeRates()">Cancel</button></div>
+<p class="n">Stored in localStorage on this browser.</p></div></div>
+<script>
+const R={skip:380,conc:155,mesh:90,pir:100,hard:85,lab:320,prelim:3750,sipm2:280,flm2:48,tw:68,tf:65};
+let secs=[];
+const P={
+prelims:{t:"Site & Safety / Prelims",c:"high",a:1,fn:(a,s)=>[
+{d:"6m³ Skip x2",q:Math.max(2,Math.ceil(a/25)),r:R.skip,u:"no",x:1},
+{d:"Heras / site security",q:1,r:450,u:"sum",x:1},
+{d:"Welfare / power",q:1,r:600,u:"sum",x:1},
+{d:"Prelims weeks",q:s===2?2:1,r:R.prelim,u:"wk",x:1}]},
+found:{t:"Foundations & Groundworks",c:"med",a:1,fn:(a)=>[
+{d:"Excavation & disposal",q:1,r:Math.round(a*70),u:"sum",x:1},
+{d:"Ready-mix concrete m³",q:Math.max(8,Math.round(a*.35)),r:R.conc,u:"m³",x:1},
+{d:"A393 mesh",q:Math.max(6,Math.ceil(a/5)),r:R.mesh,u:"sh",x:1},
+{d:"Hardcore / SR21",q:Math.max(10,Math.round(a*.4)),r:R.hard,u:"t",x:1},
+{d:"Labour dig & pour days",q:Math.max(4,Math.ceil(a/8)),r:R.lab,u:"day",x:1}]},
+floor:{t:"Floor Base & Insulation",c:"high",a:1,fn:(a)=>[
+{d:"150mm PIR",q:Math.ceil(a/2.8),r:R.pir,u:"sh",x:1},
+{d:"Radon / DPM",q:1,r:Math.round(a*7),u:"sum",x:1},
+{d:"Concrete slab m³",q:Math.max(4,Math.round(a*.15)),r:R.conc,u:"m³",x:1},
+{d:"Labour floor days",q:Math.max(3,Math.ceil(a/12)),r:R.lab,u:"day",x:1}]},
+sip:{t:"Guardian / SIP Kit & Erect",c:"med",k:["sip","guardian","panel"],fn:(a)=>[
+{d:"SIP / Guardian kit",q:1,r:Math.round(a*R.sipm2),u:"sum",x:1},
+{d:"Fittings / connections",q:1,r:Math.round(a*30),u:"sum",x:1},
+{d:"Crane / plant",q:1,r:950,u:"day",x:1},
+{d:"Erect labour days",q:Math.max(4,Math.ceil(a/10)),r:R.lab,u:"day",x:1}]},
+timber:{t:"Timber Frame",c:"med",k:["timber"],fn:(a)=>[
+{d:"Timber frame kit",q:1,r:Math.round(a*220),u:"sum",x:1},
+{d:"Erect labour + plant",q:Math.max(5,Math.ceil(a/8)),r:R.lab,u:"day",x:1}]},
+block:{t:"Blockwork Superstructure",c:"med",k:["block","masonry"],fn:(a,s)=>[
+{d:"Blockwork m²",q:Math.round(a*(s===2?2.8:1.6)),r:95,u:"m²",x:1},
+{d:"Labour block days",q:Math.max(8,Math.ceil(a/4)),r:R.lab,u:"day",x:1}]},
+clad:{t:"External Cladding & Weather",c:"med",a:1,fn:(a)=>[
+{d:"Cladding / render allowance",q:1,r:Math.round(a*110),u:"sum",x:1},
+{d:"EPDM / roof membrane",q:1,r:Math.round(a*45),u:"sum",x:1},
+{d:"Windows / doors allowance",q:1,r:Math.round(a*160),u:"sum",x:1},
+{d:"Labour external days",q:Math.max(6,Math.ceil(a/6)),r:R.lab,u:"day",x:1}]},
+int:{t:"Internal Works (Extension)",c:"high",a:1,fn:(a)=>[
+{d:"Stud + insul + board",q:1,r:Math.round(a*85),u:"sum",x:1},
+{d:"1st fix plumbing",q:1,r:Math.round(a*45),u:"sum",x:1},
+{d:"Electrics 1st+2nd",q:1,r:Math.round(a*60),u:"sum",x:1},
+{d:"Skim plaster",q:1,r:Math.round(a*55),u:"sum",x:1},
+{d:"Skirting / doors",q:1,r:Math.round(a*40),u:"sum",x:1}]},
+exist:{t:"Existing House Works",c:"med",k:["existing","kitchen","remove","opening","radiator","utility","toilet","make good"],fn:()=>[
+{d:"Remove kitchen + skip",q:1,r:950,u:"sum",x:1},
+{d:"New opening into house",q:1,r:1400,u:"sum",x:1},
+{d:"Relocate radiator",q:1,r:280,u:"sum",x:1},
+{d:"Stud toilet/utility + sound",q:1,r:2200,u:"sum",x:1},
+{d:"Doors + ironmongery",q:2,r:450,u:"no",x:1},
+{d:"Electrics relocate",q:1,r:1100,u:"sum",x:1},
+{d:"Floor / wall make-good",q:1,r:850,u:"sum",x:1}]},
+flr:{t:"Flooring",c:"high",k:["flooring","timber floor","t&g"],fn:(a)=>[
+{d:"Timber floor + underlay",q:a,r:R.flm2,u:"m²",x:1},
+{d:"Skirting",q:1,r:Math.round(a*12),u:"sum",x:1}]},
+bath:{t:"Bathroom",c:"med",k:["bathroom","shower","toilet","tiles","suite"],fn:()=>[
+{d:"Floor tiles + labour",q:4,r:R.tf,u:"m²",x:1},
+{d:"Wall tiles + labour",q:20,r:R.tw,u:"m²",x:1},
+{d:"Toilet window + works",q:1,r:650,u:"sum",x:1},
+{d:"Bathroom suite",q:1,r:1800,u:"sum",x:1},
+{d:"Radiators + 2nd fix",q:1,r:980,u:"sum",x:1}]},
+ext:{t:"Exterior Attendances",c:"low",k:["boundary","neighbour","shed","footpath"],fn:()=>[
+{d:"Boundary / footpath repair",q:1,r:1200,u:"sum",x:1},
+{d:"Ground make-good (shed)",q:1,r:650,u:"sum",x:1},
+{d:"Attendances / clean",q:1,r:800,u:"sum",x:1}]}
+};
+function match(t,ks){t=t.toLowerCase();return ks&&ks.some(k=>t.includes(k))}
+function build(k,a,s){const p=P[k];return{id:k,t:p.t,c:p.c,items:p.fn(a,s).map(i=>({...i}))}}
+function has(arr,id){return arr.some(x=>x.id===id)}
+function run(){
+const txt=document.getElementById("iScope").value.trim();
+const a=+document.getElementById("iArea").value||35;
+const s=+document.getElementById("iStoreys").value||1;
+const typ=document.getElementById("iType").value||"sip";
+const name=document.getElementById("iName").value.trim()||"Extension";
+const client=document.getElementById("iClient").value.trim();
+if(txt.length<12){alert("Please describe the job in more detail.");return}
+const low=txt.toLowerCase();
+const det=[],miss=[],ns=[];
+if(typ==="sip"||match(low,P.sip.k)){det.push("SIP");ns.push(build("sip",a,s))}
+else if(typ==="timber"||match(low,P.timber.k)){det.push("Timber");ns.push(build("timber",a,s))}
+else if(typ==="block"||match(low,P.block.k)){det.push("Block");ns.push(build("block",a,s))}
+else{det.push("SIP (default)");ns.push(build("sip",a,s))}
+["prelims","found","floor","clad","int"].forEach(k=>{if(!has(ns,k)){ns.push(build(k,a,s));miss.push(P[k].t)}});
+if(match(low,P.exist.k)||match(low,["kitchen","opening","utility","toilet"])){if(!has(ns,"exist")){ns.push(build("exist",a,s));det.push("Existing house")}}
+else{ns.push(build("exist",a,s));miss.push("Existing house works")}
+if(match(low,P.flr.k)||match(low,["floor"])){if(!has(ns,"flr")){ns.push(build("flr",a,s));det.push("Flooring")}}
+else{ns.push(build("flr",a,s));miss.push("Flooring")}
+if(match(low,P.bath.k)){if(!has(ns,"bath")){ns.push(build("bath",a,s));det.push("Bathroom")}}
+if(match(low,P.ext.k)||match(low,["shed","boundary"])){if(!has(ns,"ext")){ns.push(build("ext",a,s));det.push("Exterior")}}
+else{ns.push(build("ext",a,s));miss.push("Exterior attendances")}
+const ord=["prelims","found","floor","sip","timber","block","clad","int","exist","flr","bath","ext"];
+ns.sort((x,y)=>ord.indexOf(x.id)-ord.indexOf(y.id));
+secs=ns;
+document.getElementById("pName").value=name;
+document.getElementById("pClient").value=client;
+document.getElementById("pDate").value=new Date().toISOString().slice(0,10);
+document.getElementById("note").innerHTML="<strong>Scope analysed.</strong> "+a+" m² · "+(s===2?"Two":"Single")+" storey · "+typ.toUpperCase()+".<br><strong>Detected:</strong> "+(det.join(", ")||"core works")+".<br><strong>Auto-added:</strong> "+(miss.join(", ")||"none")+". Green “auto” tags = system added.";
+showEst();render();
+}
+function showEst(){document.getElementById("s1").classList.remove("on");document.getElementById("s2").classList.add("on");document.getElementById("tb").style.display="flex"}
+function goStart(){document.getElementById("s2").classList.remove("on");document.getElementById("s1").classList.add("on");document.getElementById("tb").style.display="none"}
+function st(s){return s.items.reduce((t,i)=>t+(+i.q*+i.r),0)}
+function render(){
+const c=document.getElementById("secs");c.innerHTML="";
+secs.forEach((s,si)=>{
+const el=document.createElement("div");el.className="sec";
+el.innerHTML=`<div class="sec-h" onclick="tog(this)"><h2>${s.t}</h2><span class="conf c${s.c[0]}">${s.c}</span>
+<button class="d s" onclick="event.stopPropagation();rmSec(${si})">Remove</button></div>
+<div>${s.items.map((it,ii)=>`<div class="line">
+<div><input value="${esc(it.d)}" onchange="upd(${si},${ii},'d',this.value)"/>${it.x?'<span class="auto">auto</span>':''}</div>
+<input type="number" value="${it.q}" step=".1" min="0" onchange="upd(${si},${ii},'q',this.value)"/>
+<input type="number" value="${it.r}" step="1" min="0" onchange="upd(${si},${ii},'r',this.value)"/>
+<div class="tot">€${(+it.q*+it.r).toFixed(0)}</div>
+<div><button class="d" onclick="rmIt(${si},${ii})">✕</button></div></div>`).join("")}
+<div class="add"><button class="s" onclick="addIt(${si})">+ Add Item</button></div></div>
+<div class="sec-f"><span>Section total</span><span class="sec-t">€${st(s).toFixed(0)}</span></div>`;
+c.appendChild(el)});
+const sub=secs.reduce((t,s)=>t+st(s),0),cont=sub*.15,g=sub+cont;
+document.getElementById("sub").textContent="€"+sub.toFixed(0);
+document.getElementById("cont").textContent="€"+cont.toFixed(0);
+document.getElementById("grand").textContent="€"+g.toFixed(0);
+document.getElementById("sell").textContent="€"+(g*2).toFixed(0);
+}
+function esc(s){return String(s).replace(/&/g,"&").replace(/</g,"<").replace(/>/g,">").replace(/"/g,""")}
+function upd(si,ii,f,v){if(f==="q"||f==="r")v=+v||0;secs[si].items[ii][f]=v;if(f==="r"||f==="q")secs[si].items[ii].x=0;render()}
+function addIt(si){secs[si].items.push({d:"New item",q:1,r:0,u:"sum",x:0});render()}
+function rmIt(si,ii){if(secs[si].items.length<=1&&!confirm("Remove last item?"))return;secs[si].items.splice(ii,1);render()}
+function addSec(){const t=prompt("Section name","New Section");if(!t)return;secs.push({id:"c"+Date.now(),t:t,c:"med",items:[{d:"New item",q:1,r:0,u:"sum",x:0}]});render()}
+function rmSec(si){if(!confirm("Remove section?"))return;secs.splice(si,1);render()}
+function tog(h){const b=h.nextElementSibling;b.style.display=b.style.display==="none"?"":"none"}
+function openRates(){const l=document.getElementById("rl");l.innerHTML="";Object.keys(R).forEach(k=>{const r=document.createElement("div");r.className="rr";r.innerHTML=`<label>${k}</label><input type="number" data-k="${k}" value="${R[k]}"/>`;l.appendChild(r)});document.getElementById("rm").classList.add("on")}
+function closeRates(){document.getElementById("rm").classList.remove("on")}
+function saveRates(){document.querySelectorAll("#rl input").forEach(i=>{R[i.dataset.k]=+i.value||0});try{localStorage.setItem("tecton_R",JSON.stringify(R))}catch(e){}closeRates();alert("Rates saved")}
+try{const s=localStorage.getItem("tecton_R");if(s)Object.assign(R,JSON.parse(s))}catch(e){}
+document.getElementById("pDate").value=new Date().toISOString().slice(0,10);
+</script>
+</body>
 </html>
