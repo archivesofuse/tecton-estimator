@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TECTON Estimator</title>
+  <style>
+    :root {
+      --tecton-red: #c41e3a;
+      --tecton-dark: #1a1a1a;
+      --tecton-black: #0d0d0d;
+      --tecton-gray: #2a2a2a;
+      --tecton-light: #f5f5f5;
+      --tecton-muted: #999;
+      --border: #3a3a3a;
+      --success: #2e7d32;
+      --warning: #f9a825;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--tecton-black);
+      color: var(--tecton-light);
+      line-height: 1.45;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(180deg, var(--tecton-dark) 0%, var(--tecton-black) 100%);
+      border-bottom: 3px solid var(--tecton-red);
+      padding: 0.9rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--tecton-red);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.4rem;
+      color: white;
+      letter-spacing: -1px;
+    }
+    header h1 {
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: var(--tecton-red);
+      text-transform: uppercase;
+      margin: 0;
+    }
+    header .tag {
+      font-size: 0.75rem;
+      color: var(--tecton-muted);
+      margin-top: 2px;
+    }
+    .toolbar {
+      display: flex;
+      gap: 0.5rem;
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+    button, .btn {
+      background: var(--tecton-gray);
+      color: var(--tecton-light);
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.85rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    button:hover, .btn:hover { background: #3a3a3a; border-color: #555; }
+    button.primary {
+      background: var(--tecton-red);
+      border-color: var(--tecton-red);
+      color: white;
+      font-weight: 600;
+    }
+    button.primary:hover { background: #a01830; }
+    button.danger { background: transparent; border-color: #666; color: #ccc; padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+    button.danger:hover { border-color: var(--tecton-red); color: var(--tecton-red); }
+    button.small { padding: 0.3rem 0.6rem; font-size: 0.78rem; }
+    main { max-width: 1100px; margin: 0 auto; padding: 1.25rem; }
+    .project-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      background: var(--tecton-dark);
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .project-meta label { display: block; font-size: 0.72rem; color: var(--tecton-muted); margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .project-meta input {
+      width: 100%;
+      background: var(--tecton-black);
+      border: 1px solid var(--border);
+      color: white;
+      padding: 0.45rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .section {
+      background: var(--tecton-dark);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 1rem;
+      background: #222;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .section-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      flex: 1;
+      margin: 0;
+    }
+    .confidence {
+      font-size: 0.72rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .conf-high { background: #1b5e20; color: #a5d6a7; }
+    .conf-med { background: #e65100; color: #ffcc80; }
+    .conf-low { background: #b71c1c; color: #ef9a9a; }
+    .section-body { padding: 0.5rem 0; }
+    .line {
+      display: grid;
+      grid-template-columns: 1fr 90px 110px 110px 70px;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.4rem 1rem;
+      border-bottom: 1px solid #2a2a2a;
+      font-size: 0.88rem;
+    }
+    .line:last-child { border-bottom: none; }
+    .line input[type="text"], .line input[type="number"] {
+      width: 100%;
+      background: var(--tecton-black);
+      border: 1px solid var(--border);
+      color: white;
+      padding: 0.35rem 0.45rem;
+      border-radius: 3px;
+      font-size: 0.85rem;
+    }
+    .line .desc { font-weight: 500; }
+    .line .qty, .line .rate, .line .total { text-align: right; }
+    .line .total { font-weight: 600; color: #e0e0e0; }
+    .line-actions { display: flex; gap: 0.3rem; justify-content: flex-end; }
+    .section-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 1rem;
+      background: #1f1f1f;
+      border-top: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .section-total { font-weight: 700; color: var(--tecton-red); }
+    .add-line-row {
+      padding: 0.5rem 1rem;
+      border-top: 1px dashed #333;
+    }
+    .totals-box {
+      background: var(--tecton-dark);
+      border: 2px solid var(--tecton-red);
+      border-radius: 6px;
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .totals-box h3 { margin-bottom: 0.75rem; color: var(--tecton-red); }
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.35rem 0;
+      font-size: 0.95rem;
+    }
+    .totals-row.grand {
+      font-size: 1.25rem;
+      font-weight: 800;
+      border-top: 1px solid var(--border);
+      margin-top: 0.5rem;
+      padding-top: 0.75rem;
+      color: var(--tecton-red);
+    }
+    .sources-panel {
+      margin-top: 1.5rem;
+      background: var(--tecton-dark);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+      font-size: 0.82rem;
+      color: var(--tecton-muted);
+    }
+    .sources-panel h4 { color: #ccc; margin-bottom: 0.5rem; }
+    .sources-panel ul { margin-left: 1.2rem; }
+    .sources-panel li { margin-bottom: 0.25rem; }
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--tecton-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      width: 90%;
+      max-width: 520px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal h3 { margin-bottom: 1rem; color: var(--tecton-red); }
+    .rate-row {
+      display: grid;
+      grid-template-columns: 1fr 100px;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      align-items: center;
+      font-size: 0.88rem;
+    }
+    .rate-row input {
+      background: var(--tecton-black);
+      border: 1px solid var(--border);
+      color: white;
+      padding: 0.35rem;
+      border-radius: 3px;
+      text-align: right;
+    }
+    .note {
+      font-size: 0.78rem;
+      color: var(--tecton-muted);
+      margin-top: 1rem;
+      line-height: 1.4;
+    }
+    @media print {
+      body { background: white; color: black; }
+      header, .toolbar, .add-line-row, .line-actions, .sources-panel, button { display: none !important; }
+      .section { border-color: #ccc; break-inside: avoid; }
+      .line input { border: none; background: transparent; color: black; }
+    }
+    @media (max-width: 700px) {
+      .project-meta { grid-template-columns: 1fr; }
+      .line { grid-template-columns: 1fr 70px 90px 90px 50px; font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-box">
+      <div class="logo-icon">T</div>
+      <div>
+        <h1>TECTON</h1>
+        <div class="tag">Conservative Extension Estimator</div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="small" onclick="openRatesModal()">Edit Rates</button>
+      <button class="small" onclick="window.print()">Print / PDF</button>
+      <button class="primary small" onclick="resetAll()">Reset All</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="project-meta">
+      <div>
+        <label>Project / Address</label>
+        <input type="text" id="projName" placeholder="e.g. 12 Oak Road Extension" onchange="saveMeta()" />
+      </div>
+      <div>
+        <label>Client</label>
+        <input type="text" id="projClient" placeholder="Client name" onchange="saveMeta()" />
+      </div>
+      <div>
+        <label>Date</label>
+        <input type="date" id="projDate" onchange="saveMeta()" />
+      </div>
+    </div>
+
+    <div id="sections"></div>
+
+    <div style="margin: 1rem 0;">
+      <button class="primary" onclick="addSection()">+ Add New Section</button>
+    </div>
+
+    <div class="totals-box">
+      <h3>Project Totals (Cost Only)</h3>
+      <div class="totals-row"><span>Subtotal of all sections</span><span id="subTotal">€0</span></div>
+      <div class="totals-row"><span>Contingency (15%)</span><span id="contingency">€0</span></div>
+      <div class="totals-row grand"><span>TOTAL COST TO COMPLETE</span><span id="grandTotal">€0</span></div>
+      <div class="totals-row" style="margin-top:0.75rem; color:#aaa;">
+        <span>Suggested Sell Price (×2 for 50% margin)</span>
+        <span id="sellPrice" style="font-weight:700; color:#fff;">€0</span>
+      </div>
+      <p class="note">
+        All figures are conservative cost-to-complete estimates only. Labour times are padded. Material rates include wastage + price fluctuation buffer. 
+        You add your own 50% profit by doubling. Corrections made via “Correct” are permanent on this browser.
+      </p>
+    </div>
+
+    <div class="sources-panel">
+      <h4>Data Sources (live checks Nov 2026)</h4>
+      <p><strong>Materials (≥3 sources each):</strong></p>
+      <ul>
+        <li>6 m³ Skip – Bark Ireland, Kollect, HireASkipOnline & local Leinster operators → €350–420 → used €380</li>
+        <li>Ready-mix C25/30–C28/35 – Hanly Quarries published list, BoqCalc Ireland, BuildersCount → €143–155/m³</li>
+        <li>A393 Mesh 4.8×2.4 – Goodwins, TJ O’Mahony, Ganly’s, Cork BP, McMahons → €78–93 → used €90</li>
+        <li>150 mm PIR – Goodwins (Unilin), Brooks (Kingspan), Irish Building Supply, MyBuildingSupplies → €86–105</li>
+        <li>SR21 / hardcore – Goodwins, McMahons bulk bags & local quarries</li>
+      </ul>
+      <p style="margin-top:0.6rem;"><strong>Labour / programme (≥5 extension sources):</strong></p>
+      <ul>
+        <li>House Extension Dublin / BuildMe.ie – single-storey 12–16 weeks on site</li>
+        <li>OS Holding – timber/SIP shell “days to weathertight”</li>
+        <li>Planningpermissionireland.ie – SIPs 2–3 weeks to weathertight</li>
+        <li>ExtensionsQuote.ie & Talqero – overall 3–6 months</li>
+        <li>TradeSource / ShamFix – plastering productivity & day rates 2026</li>
+        <li>Selfbuild.ie SIP case studies + SEO 2026 craft rates</li>
+      </ul>
+      <p style="margin-top:0.5rem;">Conservative multipliers applied: Labour ×1.25, Materials ×1.15, Contingency 15%.</p>
+    </div>
+  </main>
+
+  <!-- Rates Modal -->
+  <div class="modal-overlay" id="ratesModal">
+    <div class="modal">
+      <h3>Edit Global Rates (permanent)</h3>
+      <div id="ratesList"></div>
+      <div style="margin-top:1rem; display:flex; gap:0.5rem;">
+        <button class="primary" onclick="saveRates()">Save Rates</button>
+        <button onclick="closeRatesModal()">Cancel</button>
+      </div>
+      <p class="note">These rates are stored in localStorage and used for every new estimate on this browser until you change them again.</p>
+    </div>
+  </div>
+
+  <script>
+    // ========== DEFAULT RATES (multi-source conservative) ==========
+    const DEFAULT_RATES = {
+      skip_6m3: { label: "6 m³ Skip hire", value: 380, unit: "each" },
+      concrete_m3: { label: "Ready-mix concrete (m³)", value: 155, unit: "m³" },
+      a393_mesh: { label: "A393 Mesh sheet", value: 90, unit: "sheet" },
+      pir_150: { label: "150 mm PIR board", value: 100, unit: "sheet" },
+      hardcore_t: { label: "SR21 / Hardcore (tonne)", value: 85, unit: "t" },
+      labour_day: { label: "Labour day rate (craft)", value: 320, unit: "day" },
+      general_labour: { label: "General labour day", value: 240, unit: "day" },
+      plaster_m2: { label: "Skim plaster (m²)", value: 28, unit: "m²" },
+      blockwork_m2: { label: "Blockwork (m²)", value: 95, unit: "m²" },
+      prelim_week: { label: "Prelims / week", value: 3750, unit: "week" }
+    };
+
+    // ========== DEFAULT SECTIONS (from original quote structure) ==========
+    const DEFAULT_SECTIONS = [
+      {
+        id: "site",
+        title: "Site & Safety / Prelims",
+        confidence: "high",
+        items: [
+          { desc: "6 m³ Skip hire x 2", qty: 2, rate: 380, unit: "no" },
+          { desc: "Heras fencing / site security allowance", qty: 1, rate: 450, unit: "sum" },
+          { desc: "Welfare / toilet / power allowance", qty: 1, rate: 600, unit: "sum" },
+          { desc: "Prelims (1 week base)", qty: 1, rate: 3750, unit: "week" }
+        ]
+      },
+      {
+        id: "foundations",
+        title: "Foundations & Groundworks",
+        confidence: "med",
+        items: [
+          { desc: "Excavation & disposal allowance", qty: 1, rate: 2800, unit: "sum" },
+          { desc: "Ready-mix concrete foundations (m³)", qty: 12, rate: 155, unit: "m³" },
+          { desc: "A393 mesh", qty: 8, rate: 90, unit: "sheet" },
+          { desc: "Hardcore / SR21 blinding", qty: 15, rate: 85, unit: "t" },
+          { desc: "Labour – dig & pour (padded days)", qty: 6, rate: 320, unit: "day" }
+        ]
+      },
+      {
+        id: "floor",
+        title: "Floor Base & Insulation",
+        confidence: "high",
+        items: [
+          { desc: "150 mm PIR insulation", qty: 40, rate: 100, unit: "sheet" },
+          { desc: "Radon barrier / DPM", qty: 1, rate: 280, unit: "sum" },
+          { desc: "Concrete floor slab (m³)", qty: 6, rate: 155, unit: "m³" },
+          { desc: "Labour floor prep & pour", qty: 4, rate: 320, unit: "day" }
+        ]
+      },
+      {
+        id: "sip",
+        title: "Guardian / SIP Kit & Erect",
+        confidence: "med",
+        items: [
+          { desc: "SIP / Guardian kit supply (allowance)", qty: 1, rate: 18500, unit: "sum" },
+          { desc: "Kit fittings / connections allowance", qty: 1, rate: 1200, unit: "sum" },
+          { desc: "Crane / plant for erect", qty: 1, rate: 950, unit: "day" },
+          { desc: "Erect labour (padded)", qty: 5, rate: 320, unit: "day" }
+        ]
+      },
+      {
+        id: "cladding",
+        title: "External Cladding & Weatherproofing",
+        confidence: "med",
+        items: [
+          { desc: "External cladding / render / finish allowance", qty: 1, rate: 4200, unit: "sum" },
+          { desc: "EPDM / roof membrane", qty: 1, rate: 1800, unit: "sum" },
+          { desc: "Windows / doors supply & fit allowance", qty: 1, rate: 6500, unit: "sum" },
+          { desc: "Labour external finishes", qty: 8, rate: 320, unit: "day" }
+        ]
+      },
+      {
+        id: "internal",
+        title: "Internal Works (Extension)",
+        confidence: "high",
+        items: [
+          { desc: "Studwork + insulation + plasterboard", qty: 1, rate: 3200, unit: "sum" },
+          { desc: "First fix plumbing / waste", qty: 1, rate: 1800, unit: "sum" },
+          { desc: "Electrical first + second fix (5 points)", qty: 1, rate: 2400, unit: "sum" },
+          { desc: "Skim plaster materials + labour", qty: 1, rate: 2100, unit: "sum" },
+          { desc: "Skirting / architrave / doors allowance", qty: 1, rate: 1600, unit: "sum" }
+        ]
+      },
+      {
+        id: "existing",
+        title: "Existing House Interior Works",
+        confidence: "med",
+        items: [
+          { desc: "Remove existing kitchen / units + skip", qty: 1, rate: 950, unit: "sum" },
+          { desc: "Create new opening Dining → utility", qty: 1, rate: 1400, unit: "sum" },
+          { desc: "Relocate radiator", qty: 1, rate: 280, unit: "sum" },
+          { desc: "New studwork toilet/shower + hall + sound", qty: 1, rate: 2200, unit: "sum" },
+          { desc: "3 × glass shower / timber doors + ironmongery", qty: 3, rate: 450, unit: "no" },
+          { desc: "Electrical relocate + new lights/switches", qty: 1, rate: 1100, unit: "sum" },
+          { desc: "Floor repairs / T&G fix / wall make-good", qty: 1, rate: 850, unit: "sum" }
+        ]
+      },
+      {
+        id: "flooring",
+        title: "Flooring & Bathroom",
+        confidence: "med",
+        items: [
+          { desc: "Timber T&G floor supply + fit 38 m² + underlay", qty: 38, rate: 48, unit: "m²" },
+          { desc: "Skirting boards", qty: 1, rate: 420, unit: "sum" },
+          { desc: "Bathroom floor tiles 4 m² + labour", qty: 4, rate: 65, unit: "m²" },
+          { desc: "Wall tiles 20 m² @ €50 + adhesive + labour", qty: 20, rate: 68, unit: "m²" },
+          { desc: "New toilet window + works", qty: 1, rate: 650, unit: "sum" },
+          { desc: "Bathroom suite allowance", qty: 1, rate: 1800, unit: "sum" },
+          { desc: "2 × new radiators + second fix utilities", qty: 1, rate: 980, unit: "sum" }
+        ]
+      },
+      {
+        id: "exterior",
+        title: "Exterior Finishes & Attendances",
+        confidence: "low",
+        items: [
+          { desc: "Footpath / plaster repair to neighbour boundary", qty: 1, rate: 1200, unit: "sum" },
+          { desc: "Ground make-good where shed removed", qty: 1, rate: 650, unit: "sum" },
+          { desc: "Extra attendances / cleaning allowance", qty: 1, rate: 800, unit: "sum" }
+        ]
+      }
+    ];
+
+    // ========== STATE ==========
+    let sections = [];
+    let rates = {};
+
+    // ========== STORAGE ==========
+    function loadState() {
+      try {
+        const s = localStorage.getItem("tecton_sections");
+        const r = localStorage.getItem("tecton_rates");
+        const m = localStorage.getItem("tecton_meta");
+        sections = s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULT_SECTIONS));
+        rates = r ? JSON.parse(r) : JSON.parse(JSON.stringify(DEFAULT_RATES));
+        if (m) {
+          const meta = JSON.parse(m);
+          document.getElementById("projName").value = meta.name || "";
+          document.getElementById("projClient").value = meta.client || "";
+          document.getElementById("projDate").value = meta.date || new Date().toISOString().slice(0,10);
+        } else {
+          document.getElementById("projDate").value = new Date().toISOString().slice(0,10);
+        }
+      } catch (e) {
+        sections = JSON.parse(JSON.stringify(DEFAULT_SECTIONS));
+        rates = JSON.parse(JSON.stringify(DEFAULT_RATES));
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem("tecton_sections", JSON.stringify(sections));
+      localStorage.setItem("tecton_rates", JSON.stringify(rates));
+      saveMeta();
+    }
+
+    function saveMeta() {
+      localStorage.setItem("tecton_meta", JSON.stringify({
+        name: document.getElementById("projName").value,
+        client: document.getElementById("projClient").value,
+        date: document.getElementById("projDate").value
+      }));
+    }
+
+    // ========== RENDER ==========
+    function render() {
+      const container = document.getElementById("sections");
+      container.innerHTML = "";
+      sections.forEach((sec, sIdx) => {
+        const el = document.createElement("div");
+        el.className = "section";
+        el.innerHTML = `
+          <div class="section-header" onclick="toggleSection(this)">
+            <h2>${sec.title}</h2>
+            <span class="confidence conf-${sec.confidence}">${sec.confidence}</span>
+            <button class="danger small" onclick="event.stopPropagation(); removeSection(${sIdx})">Remove Section</button>
+          </div>
+          <div class="section-body">
+            <div class="line" style="font-size:0.75rem; color:var(--tecton-muted); font-weight:600;">
+              <div>Description</div>
+              <div style="text-align:right">Qty</div>
+              <div style="text-align:right">Rate €</div>
+              <div style="text-align:right">Total €</div>
+              <div></div>
+            </div>
+            ${sec.items.map((item, iIdx) => `
+              <div class="line">
+                <input type="text" class="desc" value="${escapeHtml(item.desc)}" onchange="updateItem(${sIdx},${iIdx},'desc',this.value)" />
+                <input type="number" class="qty" value="${item.qty}" step="0.1" min="0" onchange="updateItem(${sIdx},${iIdx},'qty',this.value)" />
+                <input type="number" class="rate" value="${item.rate}" step="1" min="0" onchange="updateItem(${sIdx},${iIdx},'rate',this.value)" />
+                <div class="total">€${(item.qty * item.rate).toFixed(0)}</div>
+                <div class="line-actions">
+                  <button class="danger" onclick="removeItem(${sIdx},${iIdx})" title="Remove">✕</button>
+                </div>
+              </div>
+            `).join("")}
+            <div class="add-line-row">
+              <button class="small" onclick="addItem(${sIdx})">+ Add Item</button>
+            </div>
+          </div>
+          <div class="section-footer">
+            <span>Section total</span>
+            <span class="section-total">€${sectionTotal(sec).toFixed(0)}</span>
+          </div>
+        `;
+        container.appendChild(el);
+      });
+      updateTotals();
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
+    function sectionTotal(sec) {
+      return sec.items.reduce((sum, i) => sum + (Number(i.qty) * Number(i.rate)), 0);
+    }
+
+    function updateTotals() {
+      const sub = sections.reduce((s, sec) => s + sectionTotal(sec), 0);
+      const cont = sub * 0.15;
+      const grand = sub + cont;
+      document.getElementById("subTotal").textContent = "€" + sub.toFixed(0);
+      document.getElementById("contingency").textContent = "€" + cont.toFixed(0);
+      document.getElementById("grandTotal").textContent = "€" + grand.toFixed(0);
+      document.getElementById("sellPrice").textContent = "€" + (grand * 2).toFixed(0);
+    }
+
+    // ========== ACTIONS ==========
+    function updateItem(sIdx, iIdx, field, value) {
+      if (field === "qty" || field === "rate") value = Number(value) || 0;
+      sections[sIdx].items[iIdx][field] = value;
+      saveState();
+      render();
+    }
+
+    function addItem(sIdx) {
+      sections[sIdx].items.push({ desc: "New item", qty: 1, rate: 0, unit: "sum" });
+      saveState();
+      render();
+    }
+
+    function removeItem(sIdx, iIdx) {
+      if (sections[sIdx].items.length <= 1) {
+        if (!confirm("Remove the last item in this section?")) return;
+      }
+      sections[sIdx].items.splice(iIdx, 1);
+      saveState();
+      render();
+    }
+
+    function addSection() {
+      const title = prompt("Section name:", "New Section");
+      if (!title) return;
+      sections.push({
+        id: "custom_" + Date.now(),
+        title: title,
+        confidence: "med",
+        items: [{ desc: "New item", qty: 1, rate: 0, unit: "sum" }]
+      });
+      saveState();
+      render();
+    }
+
+    function removeSection(sIdx) {
+      if (!confirm("Remove entire section \"" + sections[sIdx].title + "\"?")) return;
+      sections.splice(sIdx, 1);
+      saveState();
+      render();
+    }
+
+    function toggleSection(header) {
+      const body = header.nextElementSibling;
+      body.style.display = body.style.display === "none" ? "" : "none";
+    }
+
+    function resetAll() {
+      if (!confirm("Reset all sections and rates to factory defaults? This clears your permanent corrections.")) return;
+      localStorage.removeItem("tecton_sections");
+      localStorage.removeItem("tecton_rates");
+      loadState();
+      render();
+    }
+
+    // ========== RATES MODAL ==========
+    function openRatesModal() {
+      const list = document.getElementById("ratesList");
+      list.innerHTML = "";
+      Object.keys(rates).forEach(key => {
+        const r = rates[key];
+        const row = document.createElement("div");
+        row.className = "rate-row";
+        row.innerHTML = `
+          <label>${r.label}</label>
+          <input type="number" data-key="${key}" value="${r.value}" step="1" />
+        `;
+        list.appendChild(row);
+      });
+      document.getElementById("ratesModal").classList.add("open");
+    }
+
+    function closeRatesModal() {
+      document.getElementById("ratesModal").classList.remove("open");
+    }
+
+    function saveRates() {
+      document.querySelectorAll("#ratesList input").forEach(inp => {
+        const key = inp.dataset.key;
+        rates[key].value = Number(inp.value) || 0;
+      });
+      localStorage.setItem("tecton_rates", JSON.stringify(rates));
+      closeRatesModal();
+      alert("Rates saved permanently on this browser.");
+    }
+
+    // ========== INIT ==========
+    loadState();
+    render();
+  </script>
+</body>
+</html>
